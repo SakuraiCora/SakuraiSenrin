@@ -1,0 +1,2 @@
+# SakuraiZer0
+使用go-cqhttp作为框架，nonebot2作为SDK打造的一款服务于galgame玩家的轻量级QQ机器人
