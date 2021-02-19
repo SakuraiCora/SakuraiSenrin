@@ -6,6 +6,9 @@ from nonebot.adapters.cqhttp import Bot
 gids = {}  # 此处放入指定群聊
 
 nonebot.init(apscheduler_autostart=True)
+nonebot.init(apscheduler_config={
+    "apscheduler.timezone": "Asia/Shanghai"
+})
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter("cqhttp", Bot)
