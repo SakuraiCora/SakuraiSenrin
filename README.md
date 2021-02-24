@@ -32,21 +32,68 @@
 
 # 使用手册
 ## 按文件分类
-> ### Datalog.py
+>### Datalog.py
 >+ 群聊发言次数记录及查询
 >### Help.py
 >+ 提供帮助文档
 >### Notice.py
->+ 通知上报
+>+ 通知上报、自动校时、整点报时
 >### PictureAppraisal.py
 >+ 通过调用 **百度内容识别API** 来完成违规图识别
 >### Pixiv.py
->+ ~~涩图（移植中，未填坑）~~
->### study.py
+>+ 通过调用 **Lolicon API** 来获取涩图
+>### Study.py
 >+ 词库学习、调用、操作、展示
+>### TextAppraisa.py
+>+ 初步 **处理** 并 **鉴定** 所发的文字中是否包含 **链接**
 
 ## 按功能分类
->有待完善
+>### 被动触发
+>+ 违规图识别
+>+ 蓝链检测
+>+ 通知上报
+
+>### 主动触发
+>#### 帮助文档
+>+ **#help \<FunctionID>**
+>>+ 发送 **功能代码** 为 ***functionID*** 的帮助文档
+>>+ 若FunctionID为空，则发送 **功能代码列表**
+
+>#### 词库学习
+>+ **#study module Q A**
+>>+ 让Zer0在用户发送 **Q** 的对于 **module** 回答 **A**
+>>+ mudule参数：A（全局相应）P（个人相应）
+>>+ Q为感知语（不能含有空格，默认严格匹配，区分大小写）
+>>+ A为应答语（不能含有空格）
+>+ **#lib_manage show（仅bot管理员）**
+>>+ 以图片的格式展示词库 
+>+ **#lib_manage del class uesr_id key（仅bot管理员）**
+>>+ 删除 **studylib['class']['user_id']** 对应的词库条例
+>>+ class参数：public（全局相应）private（个人响应）
+>>+ user_id参数：
+>>>+ 若class为public， 则填入 **all_users**
+>>>+ 若class为private，则填入 **用户QQ号**
+
+>### 随机/定向 涩图
+>+ **#setu random level num**（指令模式）
+>>+ 获取 num 张分级为 level 的涩图
+>>+ level参数：0（非R18）1（R18）2（混合）
+>>+ num参数：1-10
+>+ **#setu search keyword num**
+>>+ 获取 num 张关键词为 keyword 的涩图
+>>+ keyword参数：关键字
+>>+ num参数：1-10（可能会因为API库存原因而小于这个值）
+>+ **regex** （正则匹配）
+>>+ 以正则匹配的方法处理信息后，向内部函数传参来获取涩图
+>>+ 随机涩图：
+>>>+ 从本地库中随机抽取一张涩图 （CD为5s）
+>>>+ ^[来整]点[涩色活好康][的图儿]$|^[色涩]图来$|^冲[亿1一]发$|^冲$|^[色涩黄]图$
+>>>+ 示例：来点涩图 整点活儿 冲 冲亿发
+>>+ 定向涩图：
+>>>+ 从API中获取 ***num*** 张 ***keyword*** 的涩图 （CD为60s）
+>>>+ ^[来整]点.\S*[色涩黄]图$|^[来整][几.\S*][张份个]\S*[色涩黄]图$
+>>>+ 示例：来点keyword涩图 整十张keyword涩图
+>+ **温馨提示：年轻人要学会控制自己的欲望**
 
 <hr>
 
@@ -76,7 +123,8 @@
                            ├── Notices.py
                            ├── PictureAppraisal.py
                            ├── Pixiv.py
-                           └── Study.py
+                           ├── Study.py
+                           └── TextAppraisal.py
 
 <hr>
 
