@@ -9,8 +9,9 @@ baidu_client_secret = ''
 
 lolicon_api = ''
 
-masterList = ['114514']  # bot管理员 (str)
-post_id = 114514  # 消息上报的QQ号码 (int)
+masterList = ['']  # bot管理员 (str)
+AdminList_REPORT = []   #息上报的QQ号码 (int)
+AdminList = []  #群聊管理员列表（int）
 bot_id = ''  # 此处输入bot的QQ账号(str)
 
 setu_path = ''  #你的涩图本地储存路径
