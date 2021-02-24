@@ -36,8 +36,8 @@ import json
 import re
 import datetime
 
-from ...config import bot_id, post_id
-from ...costrule import check_white_list_all, check_white_list_group, only_master
+from config import bot_id, masterList
+from costrule import check_white_list_all, check_white_list_group, only_master
 from nonebot import get_bots, get_driver, on_command, require
 from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.adapters.cqhttp.message import Message
@@ -67,7 +67,7 @@ async def start():
     bot = get_bots()[bot_id]
     for GPRID in get_driver().config.GroupList.values():
         await bot.send_group_msg(group_id=GPRID, message="吹水记录重置")
-    await bot.send_private_msg(user_id=post_id, message='初始化完毕')
+    await bot.send_private_msg(user_id=int(masterList[0]), message='初始化完毕')
     memdic = {}
     with open(f"{os.getcwd()}\\Data_Base\\datalog.json", 'w', encoding="utf-8") as f:
         json.dump(memdic, f, indent=2, sort_keys=True, ensure_ascii=False)

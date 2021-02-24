@@ -14,7 +14,7 @@ import os
 import re
 import datetime
 import aiohttp
-from ...config import lolicon_api, masterList, setu_path
+from config import lolicon_api, masterList, setu_path
 from httpx import AsyncClient
 from nonebot import get_driver
 from nonebot.adapters.cqhttp import Bot

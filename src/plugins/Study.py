@@ -29,8 +29,8 @@
 """
 import os
 import json
-from ...config import masterList
-from ...costrule import check_white_list_all, only_master
+from config import masterList
+from costrule import check_white_list_all, only_master
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.adapters.cqhttp.message import Message
@@ -40,7 +40,7 @@ from nonebot.typing import T_State
 from PIL import Image, ImageDraw, ImageFont
 
 study = on_command("study", priority=5,
-                    rule=check_white_list_all())  # 定义study命令
+                   rule=check_white_list_all())  # 定义study命令
 lib_manage = on_command('lib_manage', priority=5,
                         rule=only_master())  # 定义查询与删除
 get_march = on_message(rule=check_white_list_all(), priority=5)

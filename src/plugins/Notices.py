@@ -9,7 +9,9 @@
 """
 import datetime
 import random
-from ...config import post_id, bot_id
+import os
+from ntplib import NTPClient
+from config import masterList, bot_id
 from httpx import AsyncClient
 from nonebot import get_driver, get_bots
 from nonebot.adapters.cqhttp import Bot
@@ -100,7 +102,7 @@ async def _friend_add(bot: Bot, event):
             f'申请信息：{str(event.comment)}\n'
             f'申请时间：{add_time}'
         )
-        await bot.send_private_msg(user_id=post_id, message=msg)
+        await bot.send_private_msg(user_id=int(masterList[0]), message=msg)
 
 
 @scheduler.scheduled_job('cron', hour='*')
@@ -119,3 +121,13 @@ async def ReportTime():
     )
     for GroupID in get_driver().config.GroupList.values():
         await bot.send_group_msg_async(group_id=GroupID, message=msg)
+
+
+@scheduler.scheduled_job('cron', minutes='59')  # 校准时间
+async def repire_time():
+    hosts = ['0.cn.pool.ntp.org', '1.cn.pool.ntp.org',
+             '2.cn.pool.ntp.org', '3.cn.pool.ntp.org']
+    r = NTPClient().request(random.choice(hosts), port='ntp', version=4, timeout=5)
+    t = r.tx_time
+    _date, _time = str(datetime.datetime.fromtimestamp(t))[:22].split(' ')
+    os.system('date {} && time {}'.format(_date, _time))

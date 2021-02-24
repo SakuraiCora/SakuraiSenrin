@@ -8,7 +8,7 @@ from nonebot.rule import Rule
 from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.adapters.cqhttp.event import GroupMessageEvent, PrivateMessageEvent
 from nonebot.typing import T_State
-from .config import masterList
+from config import masterList
 
 
 def check_white_list_all() -> Rule:
@@ -34,7 +34,7 @@ def check_white_list_all() -> Rule:
                 return False
         else:
             return False
-    return Rule(_check)
+    return Rule(_check)  # type:ignore
 
 
 def check_white_list_group() -> Rule:
@@ -55,7 +55,7 @@ def check_white_list_group() -> Rule:
                 return False
         else:
             return False
-    return Rule(_check)
+    return Rule(_check)  # type:ignore
 
 
 def check_white_list_friend() -> Rule:
@@ -76,7 +76,7 @@ def check_white_list_friend() -> Rule:
                 return False
         else:
             return False
-    return Rule(_check)
+    return Rule(_check)  # type:ignore
 
 
 def only_master() -> Rule:
@@ -94,4 +94,27 @@ def only_master() -> Rule:
             return True
         else:
             return False
-    return Rule(_only_master)
+    return Rule(_only_master)  # type:ignore
+
+
+def only_reply() -> Rule:
+    """
+    :说明:
+
+        判定回复消息
+
+    :参数:
+
+      * 无
+    """
+    async def _only_reply(bot: Bot, event: Event, state: T_State) -> bool:
+        if isinstance(event, PrivateMessageEvent) or isinstance(event, GroupMessageEvent):
+            try:
+                t = event.reply.message_type
+            except:
+                return False
+            else:
+                return True
+        else:
+            return False
+    return Rule(_only_reply)  # type:ignore
