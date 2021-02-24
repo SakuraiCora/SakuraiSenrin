@@ -74,12 +74,19 @@
 >>>+ 若class为public， 则填入 **all_users**
 >>>+ 若class为private，则填入 **用户QQ号**
 
+>#### 群聊发言次数查询
+>+ **#water \<@user>**
+>>+ 获取@对象的当天在本群的发言次数
+>>+ 若\<@user>为空，则获取自己的发言次数
+>+ **#water list**
+>>+ 获取当天在本群的 **发言次数排行榜** （由于是at对方，慎用）
+
 >### 随机/定向 涩图
 >+ **#setu random level num**（指令模式）
 >>+ 获取 num 张分级为 level 的涩图
 >>+ level参数：0（非R18）1（R18）2（混合）
 >>+ num参数：1-10
->+ **#setu search keyword num**
+>+ **#setu search keyword num**（指令模式）
 >>+ 获取 num 张关键词为 keyword 的涩图
 >>+ keyword参数：关键字
 >>+ num参数：1-10（可能会因为API库存原因而小于这个值）
