@@ -35,6 +35,8 @@ async def _get_text(bot: Bot, event: GroupMessageEvent):
 
     out_msg = ''
     for _msg in event.message:
+        if _msg.type == 'xml' or _msg.type == 'json':
+            await report()
         if _msg.type == 'text':
             for each in str(_msg):
                 if re.match(r'[A-Za-z0-9;/?:@&=]', each):
