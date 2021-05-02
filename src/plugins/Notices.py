@@ -28,6 +28,7 @@ member_var = on_notice(priority=5)
 ban_members = on_notice(priority=5)
 lucky_king = on_notice(priority=5)
 friend_add = on_request(priority=5)
+gaokao_time = datetime.datetime(datetime.datetime.now().year,6,7)
 
 
 @member_var.handle()  # 群成员变化检测  迎新 退群通告
@@ -81,15 +82,15 @@ async def _ban_menbers(bot: Bot, event):
                 await ban_members.finish(msg)
 
 
-# @lucky_king.handle()
-# async def _lucky_king(bot: Bot, event):
-#     if isinstance(event, LuckyKingNotifyEvent):
-#         msg = Message(
-#             '好耶！又有运气王欸！\n'
-#             '干等着干嘛啊，快继续啊！！！\n'
-#             f'[CQ:at,qq={str(event.target_id)}]说的就是宁呐！'
-#         )
-#         await lucky_king.finish(msg)
+@lucky_king.handle()
+async def _lucky_king(bot: Bot, event):
+    if isinstance(event, LuckyKingNotifyEvent):
+        msg = Message(
+            '好耶！又有运气王欸！\n'
+            '干等着干嘛啊，快继续啊！！！\n'
+            f'[CQ:at,qq={str(event.target_id)}]说的就是宁呐！'
+        )
+        await lucky_king.finish(msg)
 
 
 @friend_add.handle()
@@ -113,11 +114,15 @@ async def ReportTime():
         result = response.text
     bot = get_bots()[bot_id]
     hour = datetime.datetime.now().hour
+    hour = datetime.datetime.now().hour
+    finger_out = (gaokao_time-datetime.datetime.now()).days
+    gk_msg = f'距离{datetime.datetime.now().year}年高考还有{finger_out}天！\n' if finger_out > 0 else None
     msg = (
-        "How time flies!\n"
-        f"现在是北京时间{hour}：00\n"
-        "-----------------------\n"
-        f"{result}"
+            "How time flies!\n"
+            f"现在是北京时间{hour}：00\n"
+            f"{gk_msg}"
+            "-----------------------\n"
+            f"{result}"
     )
     for GroupID in get_driver().config.GroupList.values():
         await bot.send_group_msg_async(group_id=GroupID, message=msg)
