@@ -42,7 +42,9 @@
 >+ 通知上报、自动校时、整点报时
 >### PictureAppraisal.py
 >+ 通过调用 **百度内容识别API** 来完成违规图识别
->### Pixiv.py
+>### SearchPic.py
+>+ 通过 **SauceNAO** 提供的API进行搜图
+>### Setu.py
 >+ 通过调用 **Lolicon API** 来获取涩图
 >### Study.py
 >+ 词库学习、调用、操作、展示
@@ -104,11 +106,16 @@
 >>>+ 示例：来点keyword涩图 整十张keyword涩图
 >+ **温馨提示：年轻人要学会控制自己的欲望**
 
-#### **制作资料卡***
->1. **#info \<@user>** *
->>+ 根据有限的信息制作简单资料卡 \*
->>+ 若\<@user>为空，则制作自己的资料卡 \*
->>+ ~~（你甚至可以看看Zer0的资料卡）~~ \****
+#### **制作资料卡**
+>1. **#info \<@user>** 
+>>+ 根据有限的信息制作简单资料卡 
+>>+ 若\<@user>为空，则制作自己的资料卡 
+>>+ ~~（你甚至可以看看Zer0的资料卡）~~ 
+
+#### **搜图**
+>1. **【Reply】回复想搜的图** 
+>>+ 通过 **SauceNAO** 提供的API进行搜图 
+>>+ 搜图结果以私聊方式送达
 
 <hr>
 
@@ -135,16 +142,18 @@
                     └── plugins
                            ├── Datalog.py
                            ├── Help.py
+                           ├── info.py
                            ├── Notices.py
                            ├── PictureAppraisal.py
-                           ├── Pixiv.py
+                           ├── SearchPic.py
+                           ├── Setu.py
                            ├── Study.py
                            └── TextAppraisal.py
 
 <hr>
 
 # 鸣谢
-[yanyongyu](https://github.com/richardchien):  方便易用利于扩展的SDK -> [Nonebot/NoneBot2](https://github.com/nonebot/nonebot2)
+[yanyongyu](https://github.com/yanyongyu):  方便易用利于扩展的SDK -> [Nonebot/NoneBot2](https://github.com/nonebot/nonebot2)
 
 [Mrs4s](https://github.com/Mrs4s): 更新迭代快如疯狗的运行框架 ->  [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
 
