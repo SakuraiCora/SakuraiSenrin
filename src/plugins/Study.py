@@ -139,8 +139,8 @@ async def _del_lib(bot: Bot, event: Event, state: dict):
                         os.getcwd(), "Data_Base", "send.jpg")  # 设置保存路径
                     with open(os.path.join(os.getcwd(), "Data_Base", "studylib.json"), mode="r", encoding='utf-8-sig') as f:
                         lib = '现有词库如下：\n'+f.read()  # 读取词库str
-                    x = max(len(s) for s in lib.split('\n')) * 18  # 计算画布宽
-                    y = len(lib.split('\n')) * 37  # 计算画布长
+                    x,_y = set_Font.getsize(max(lib.split('\n'),key=len))
+                    y,_x = set_Font.getsize((len(lib.split('\n'))*'00'))    #斗长度！！！！！
                     image = Image.new(mode='RGB', size=(
                         x, y), color=(255, 255, 255))  # 新建画布
                     draw = ImageDraw.ImageDraw(image)  # 写字
