@@ -65,7 +65,7 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
             get_data = await Client.post(host, data=PostData, headers=Headers)
             result = get_data.json()
         if "error_code" in result:
-            if result["error_code"] == 110:
+            if result["error_code"] == 111:
                 await _get_token()
                 await Apprasial()
             elif result['error_code'] == 17:
