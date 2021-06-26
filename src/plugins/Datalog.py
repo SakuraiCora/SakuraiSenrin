@@ -45,6 +45,7 @@ from nonebot.adapters.cqhttp.event import GroupIncreaseNoticeEvent, GroupMessage
 from nonebot.plugin import on_message, on_notice
 
 memdic = {}
+LogPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'datalog.json')
 StartTime = datetime.datetime.now()
 scheduler = require('nonebot_plugin_apscheduler').scheduler  # 定义计划任务
 water = on_command("water", priority=5,
@@ -53,8 +54,24 @@ resetLog = on_command("resetLog", priority=5, rule=only_master())  # 定义手�
 writeLog = on_message(rule=check_white_list_group(), priority=5)  # 定义吹氵记录增加
 addLog = on_notice(priority=5)  # 定义群成员变动
 
+
+async def get_water_list(groupID, bot):
+    linedic = memdic[str(groupID)]
+    findic = reversed(
+        sorted(linedic.items(), key=lambda kv: (kv[1], kv[0])))
+    a = 0
+    pa = "-------氵怪排行榜-------"
+    for elem in findic:
+        UQID = elem[0]
+        ts = elem[1]
+        a = a+1
+        pa = pa + f"\n{a}.[CQ:at,qq={UQID}] 吹水{ts}次"
+        if a == 5:
+            break
+    await bot.send_group_msg_async(group_id=int(groupID), message=Message(pa))
+
 try:
-    with open(f"{os.getcwd()}\\Data_Base\\datalog.json", 'r', encoding="utf-8") as fr:
+    with open(LogPath, 'r', encoding="utf-8") as fr:
         memdic = json.load(fr)
 except:
     pass
@@ -66,10 +83,11 @@ async def start():
     StartTime = datetime.datetime.now()
     bot = get_bots()[bot_id]
     for GPRID in get_driver().config.GroupList.values():
+        await get_water_list(groupID=GPRID, bot=bot)
         await bot.send_group_msg(group_id=GPRID, message="吹水记录重置")
     await bot.send_private_msg(user_id=int(masterList[0]), message='初始化完毕')
     memdic = {}
-    with open(f"{os.getcwd()}\\Data_Base\\datalog.json", 'w', encoding="utf-8") as f:
+    with open(LogPath, 'w', encoding="utf-8") as f:
         json.dump(memdic, f, indent=2, sort_keys=True, ensure_ascii=False)
 
 
@@ -90,19 +108,7 @@ async def water_get(bot: Bot, event):
 
     if isinstance(event, GroupMessageEvent):
         if args == 'list':  # 排行榜查询
-            linedic = memdic[str(event.group_id)]
-            findic = reversed(
-                sorted(linedic.items(), key=lambda kv: (kv[1], kv[0])))
-            a = 0
-            pa = "-------氵怪排行榜-------"
-            for elem in findic:
-                UQID = elem[0]
-                ts = elem[1]
-                a = a+1
-                pa = pa + f"\n{a}.[CQ:at,qq={UQID}] 吹水{ts}次"
-                if a == 5:
-                    break
-            await bot.send_group_msg_async(group_id=int(event.group_id), message=Message(pa))
+            await get_water_list(groupID=event.group_id, bot=bot)
         elif isinstance(args, int):
             num = memdic[str(event.group_id)][str(args)]
             EndTime = datetime.datetime.now()
@@ -151,7 +157,7 @@ async def add_number_of_water(bot: Bot, event):
         else:
             water_number = water_number + 1
             memdic[str(event.group_id)][str(event.user_id)] = water_number
-            with open(f"{os.getcwd()}\\Data_Base\\datalog.json", 'w', encoding="utf-8") as f:
+            with open(LogPath, 'w', encoding="utf-8") as f:
                 json.dump(memdic, f, indent=2,
                           sort_keys=True, ensure_ascii=False)
     else:
