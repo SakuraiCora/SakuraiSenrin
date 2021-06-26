@@ -13,11 +13,13 @@ from nonebot.adapters.cqhttp.event import (
     Event, GroupMessageEvent, PrivateMessageEvent)
 from nonebot.adapters.cqhttp.message import Message
 from nonebot.plugin import on_message
-from costrule import only_reply
+from costrule import check_white_list_all, only_reply
 from httpx import AsyncClient
+from config import SauceNAO_api
 
-api_key = 'bbb7fcbbd4bef75c7b66e8a42a1ee4136f939ac3'
-Reply_SearchPic = on_message(priority=5, rule=only_reply(), block=True)
+api_key = SauceNAO_api
+Reply_SearchPic = on_message(
+    priority=5, rule=only_reply() & check_white_list_all(), block=True)
 
 
 @Reply_SearchPic.handle()
@@ -51,11 +53,11 @@ async def _Reply_SearchPic(bot: Bot, event: Event):
                 for result_send in result_list:
                     _add_result = (
                         f"第{result_send[0]}张图片：\n"
-                        f"{result_send[1]}"
+                        f"{result_send[1]}\n"
                     )
                     send_msg_result += _add_result
                 if isinstance(event, GroupMessageEvent):
-                    await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] Zer0从SauceNAO获得了搜图结果，并将以私聊方式发送！'))
+                    await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] Zer0从SauceNAO获得了搜图结果，并将以私聊方式发送！\nPS:若持续未收到图片，请添加Zer0为好友！'))
                     await bot.send_private_msg(user_id=event.user_id, message=Message(send_msg_result))
                 elif isinstance(event, PrivateMessageEvent):
                     await Reply_SearchPic.send(Message('好耶！找到图咯！\n'+send_msg_result))
@@ -77,13 +79,15 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
     else:
         if similarity < 50.0:
             return None
+        SamplePath = os.path.join(
+            os.getcwd(), 'Data_Base', f'SamplePic{numst+1}.jpg')
         pic_url = result['results'][0]['header']['thumbnail']
         async with AsyncClient(proxies={}) as Client:
             _get_sample = await Client.get(url=pic_url)
             get_sample = _get_sample.read()
-            with open(file=os.path.join(os.getcwd(), 'Data_Base\\SamplePic.jpg'), mode='wb') as WS:
+            with open(file=SamplePath, mode='wb') as WS:
                 WS.write(get_sample)
-        pic_url = os.path.join(os.getcwd(), 'Data_Base\\SamplePic.jpg')
+        pic_url = SamplePath
         try:
             source = result['results'][0]['data']['source']
         except:
