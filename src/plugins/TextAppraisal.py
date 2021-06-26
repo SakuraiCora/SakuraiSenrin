@@ -4,6 +4,7 @@
     2.发现违规立即上报
     3.正则匹配URL
 """
+from costrule import check_white_list_group
 import re
 from datetime import datetime
 from nonebot.adapters.cqhttp import Bot
@@ -12,7 +13,7 @@ from nonebot.adapters.cqhttp.message import Message
 from nonebot.plugin import on_message
 from config import AdminList_REPORT
 
-get_text = on_message(priority=5)
+get_text = on_message(priority=5, rule=check_white_list_group())
 
 
 @get_text.handle()

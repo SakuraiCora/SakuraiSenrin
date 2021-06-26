@@ -16,7 +16,7 @@
 import json
 import os
 from config import baidu_client_id, baidu_client_secret, AdminList, AdminList_REPORT
-from costrule import only_reply
+from costrule import check_white_list_group, only_reply
 from datetime import datetime
 from httpx import AsyncClient
 from nonebot.adapters.cqhttp import Bot
@@ -25,16 +25,17 @@ from nonebot.adapters.cqhttp.message import Message
 from nonebot.plugin import on_message, require
 global conclution, picture_lib, check_api
 conclution, check_api = '', True
+PicPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'picture_lib.json')
 
 try:
-    with open(f"{os.getcwd()}\\Data_Base\\picture_lib.json", 'r', encoding="utf-8") as fr:
+    with open(PicPath, 'r', encoding="utf-8") as fr:
         picture_lib = json.load(fr)
 except:
     picture_lib = {}
 
 scheduler = require('nonebot_plugin_apscheduler').scheduler  # 定义计划任务
 repire_lib = on_message(priority=5, rule=only_reply())
-get_pic = on_message(priority=5)
+get_pic = on_message(priority=5, rule=check_white_list_group())
 
 
 @scheduler.scheduled_job('cron', day='1')  # 每月一日重获tocken
@@ -48,7 +49,7 @@ async def _get_token():
         result = get_data.json()
     access_token = result['access_token']
     picture_lib['token'] = access_token
-    with open(f"{os.getcwd()}\\Data_Base\\picture_lib.json", 'w', encoding="utf-8") as f:
+    with open(PicPath, 'w', encoding="utf-8") as f:
         json.dump(picture_lib, f, indent=2, sort_keys=True,
                   ensure_ascii=False)  # 获取新的token后储存
 
@@ -110,7 +111,7 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
                 await bot.send_private_msg(user_id=Admin, message=msg_master)
                 await bot.send_private_msg(user_id=Admin, message=Message(f"Message:{str(event.get_message())}"))
             await get_pic.send(msg)
-        with open(f"{os.getcwd()}\\Data_Base\\picture_lib.json", 'w', encoding="utf-8") as f:
+        with open(PicPath, 'w', encoding="utf-8") as f:
             json.dump(picture_lib, f, indent=2,
                       sort_keys=True, ensure_ascii=False)
     for _msg in event.message:
@@ -184,6 +185,6 @@ async def _repire_lib(bot: Bot, event: Event):
             pass
     else:
         pass
-    with open(f"{os.getcwd()}\\Data_Base\\picture_lib.json", 'w', encoding="utf-8") as f:
+    with open(PicPath, 'w', encoding="utf-8") as f:
         json.dump(picture_lib, f, indent=2, sort_keys=True, ensure_ascii=False)
     await repire_lib.finish()

@@ -44,8 +44,9 @@ study = on_command("study", priority=5,
 lib_manage = on_command('lib_manage', priority=5,
                         rule=only_master())  # 定义查询与删除
 get_march = on_message(rule=check_white_list_all(), priority=5)
+StudyPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'picture_lib.json')
 
-with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'r', encoding="utf-8") as fr:
+with open(StudyPath, 'r', encoding="utf-8") as fr:
     studylib = json.load(fr)
 
 
@@ -69,7 +70,7 @@ async def handle_study(bot: Bot, event: Event, state: T_State):
                     msg = (
                         '好耶！学会了新东西！'
                     )
-                    with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'w', encoding="utf-8") as f:
+                    with open(StudyPath, 'w', encoding="utf-8") as f:
                         json.dump(studylib, f, indent=2,
                                   sort_keys=True, ensure_ascii=False)
                     await study.finish(msg)
@@ -94,7 +95,7 @@ async def handle_study(bot: Bot, event: Event, state: T_State):
                     msg = (
                         '好耶！学会了新东西！'
                     )
-                    with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'w', encoding="utf-8") as f:
+                    with open(StudyPath, 'w', encoding="utf-8") as f:
                         json.dump(studylib, f, indent=2,
                                   sort_keys=True, ensure_ascii=False)
                     await study.finish(msg)
@@ -111,12 +112,12 @@ async def got_study(bot: Bot, event: Event, state: T_State):
         if state['class'] == 'M':
             studylib['private'][str(event.get_user_id())
                                 ][state['key']] = state['value']
-            with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'w', encoding="utf-8") as f:
+            with open(StudyPath, 'w', encoding="utf-8") as f:
                 json.dump(studylib, f, indent=2,
                           sort_keys=True, ensure_ascii=False)
         elif state['class'] == 'A':
             studylib['public']['all_users'][state['key']] = state['value']
-            with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'w', encoding="utf-8") as f:
+            with open(StudyPath, 'w', encoding="utf-8") as f:
                 json.dump(studylib, f, indent=2,
                           sort_keys=True, ensure_ascii=False)
         await study.finish('好耶！已经覆盖了原条例！')
@@ -139,8 +140,9 @@ async def _del_lib(bot: Bot, event: Event, state: dict):
                         os.getcwd(), "Data_Base", "send.jpg")  # 设置保存路径
                     with open(os.path.join(os.getcwd(), "Data_Base", "studylib.json"), mode="r", encoding='utf-8-sig') as f:
                         lib = '现有词库如下：\n'+f.read()  # 读取词库str
-                    x,_y = set_Font.getsize(max(lib.split('\n'),key=len))
-                    y,_x = set_Font.getsize((len(lib.split('\n'))*'00'))    #斗长度！！！！！
+                    x, _y = set_Font.getsize(max(lib.split('\n'), key=len))
+                    y, _x = set_Font.getsize(
+                        (len(lib.split('\n'))*'00'))  # 斗长度！！！！！
                     image = Image.new(mode='RGB', size=(
                         x, y), color=(255, 255, 255))  # 新建画布
                     draw = ImageDraw.ImageDraw(image)  # 写字
@@ -153,7 +155,7 @@ async def _del_lib(bot: Bot, event: Event, state: dict):
             elif arg[0] == 'del':
                 try:
                     del studylib[arg[1]][arg[2]][arg[3]]
-                    with open(f"{os.getcwd()}\\Data_Base\\studylib.json", 'w', encoding="utf-8") as f:
+                    with open(StudyPath, 'w', encoding="utf-8") as f:
                         json.dump(studylib, f, indent=2,
                                   sort_keys=True, ensure_ascii=False)
                 except:

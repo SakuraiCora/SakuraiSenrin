@@ -9,6 +9,7 @@
     7.调控CD    咕咕咕
 """
 import asyncio
+from costrule import check_white_list_all
 import random
 import os
 import re
@@ -24,7 +25,7 @@ from nonebot.adapters.cqhttp.message import Message
 from nonebot.plugin import on_command, on_regex
 
 global last_time_command, last_time_Rrandom, resetTime
-command_setu = on_command("setu", priority=5)
+command_setu = on_command("setu", priority=5, rule=check_white_list_all())
 regex_setu_random = on_regex(
     pattern=r'^[来整]点[涩色活好康][的图儿]$|^[色涩]图来$|^冲[亿1一]发$|^冲$|^[色涩黄]图$')
 regex_setu_search = on_regex(
@@ -69,7 +70,7 @@ async def get_setu(modle, level, num, key):  # 定义获取函数
         setu = [f'悲！没有符合条件的涩图：{key}']
         resetTime = False
     else:
-        quota = result['quota']
+        quota = '∞'
         for one in result['data']:
             resetTime = True
             img_url, title, author, pixivID = one['url'], one['title'], one['author'], one['pid']
