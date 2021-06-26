@@ -5,6 +5,7 @@
 """
 
 from nonebot import on_command, on_message
+from nonebot import rule
 from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.adapters.cqhttp.event import PrivateMessageEvent
 from nonebot.adapters.cqhttp.message import Message
@@ -12,16 +13,17 @@ from nonebot.rule import to_me
 from ...costrule import check_white_list_all
 import os
 functionList = ['AWHD']
+HelpPath = os.path.join(os.getcwd(), 'DataBase', 'HelpTXT')
 
 help = on_command("help", priority=5, rule=check_white_list_all())
-at_msg = on_message(rule=to_me(), priority=5)
+at_msg = on_message(rule=to_me() & check_white_list_all(), priority=5)
 
 
 @help.handle()
 async def handle_help(bot: Bot, event: Event, state: dict):
-    args = str(event.get_message()).strip()  # 首次发送命令时跟随的参数，例：/天气 上海，则args为上海
+    args = str(event.get_message()).strip()
     if args:
-        state["functionID"] = args  # 如果用户发送了参数则直接赋值
+        state["functionID"] = args
         await bot.send(event, "get it!")
     else:
         msg = (
@@ -39,7 +41,7 @@ async def got_funtionID(bot: Bot, event: Event, state: dict):
         await help.finish(f"exit suceed...")
     if functionID not in functionList:
         await help.reject(f"[Error 404]\nNo FuntionID as {functionID}!Please try again or input ""exit"" to exit this function.")
-    with open(os.path.join(os.getcwd(), 'Data_Base', 'help', f'{functionID}.txt'), mode='r', encoding='utf-8-sig') as files:
+    with open(os.path.join(HelpPath, functionID+'.txt'), mode='r', encoding='utf-8-sig') as files:
         msg = files.readline()
     await help.finish(Message(msg))
 
