@@ -7,9 +7,11 @@
     5.处理好友请求
     6.整点报时+通报公告
 """
+from costrule import check_white_list_group
 import datetime
 import random
 import os
+import math
 from ntplib import NTPClient
 from config import masterList, bot_id
 from httpx import AsyncClient
@@ -24,11 +26,11 @@ from nonebot.plugin import on_notice, on_request, require
 
 WelcomeList = ['新人を歓迎する！', '有朋自远方来，不宜用转唬？唬不死再唬！']
 scheduler = require('nonebot_plugin_apscheduler').scheduler  # 定义计划任务
-member_var = on_notice(priority=5)
-ban_members = on_notice(priority=5)
-lucky_king = on_notice(priority=5)
+member_var = on_notice(priority=5, rule=check_white_list_group())
+ban_members = on_notice(priority=5, rule=check_white_list_group())
+lucky_king = on_notice(priority=5, rule=check_white_list_group())
 friend_add = on_request(priority=5)
-gaokao_time = datetime.datetime(datetime.datetime.now().year,6,7)
+gaokao_time = datetime.datetime(datetime.datetime.now().year, 6, 7)
 
 
 @member_var.handle()  # 群成员变化检测  迎新 退群通告
@@ -64,46 +66,46 @@ async def _change_menbers(bot: Bot, event):
 
 
 @ban_members.handle()  # 禁言
-async def _ban_menbers(bot: Bot, event):
-    if isinstance(event, GroupBanNoticeEvent):  # 禁言
-        if event.group_id in get_driver().config.GroupList.values():
-            if event.duration:
-                msg = Message(
-                    '欸？好像有人被塞上了口球呢......\n'
-                    f'对象：[CQ:at,qq={str(event.user_id)}]\n'
-                    f'时长：{str(event.duration)}s'
-                )
-                await ban_members.finish(msg)
-            else:
-                msg = Message(
-                    '好耶！口球被取下来咯~~~\n'
-                    f'对象：[CQ:at,qq={str(event.user_id)}]'
-                )
-                await ban_members.finish(msg)
+async def _ban_menbers(bot: Bot, event: GroupBanNoticeEvent):
+    if event.duration:
+        msg = Message(
+            '欸？好像有人被塞上了口球呢......\n'
+            f'对象：[CQ:at,qq={str(event.user_id)}]\n'
+            f'时长：{str(event.duration)}s'
+        )
+        await ban_members.finish(msg)
+    else:
+        msg = Message(
+            '好耶！口球被取下来咯~~~\n'
+            f'对象：[CQ:at,qq={str(event.user_id)}]'
+        )
+        await ban_members.finish(msg)
 
 
 @lucky_king.handle()
-async def _lucky_king(bot: Bot, event):
-    if isinstance(event, LuckyKingNotifyEvent):
-        msg = Message(
-            '好耶！又有运气王欸！\n'
-            '干等着干嘛啊，快继续啊！！！\n'
-            f'[CQ:at,qq={str(event.target_id)}]说的就是宁呐！'
-        )
-        await lucky_king.finish(msg)
+async def _lucky_king(bot: Bot, event: LuckyKingNotifyEvent):
+    msg = Message(
+        '好耶！又有运气王欸！\n'
+        '干等着干嘛啊，快继续啊！！！\n'
+        f'[CQ:at,qq={str(event.target_id)}]说的就是宁呐！'
+    )
+    await lucky_king.finish(msg)
 
 
 @friend_add.handle()
-async def _friend_add(bot: Bot, event):
-    if isinstance(event, FriendRequestEvent):
-        add_time = datetime.datetime.now()
-        msg = (
-            '上报好友请求：\n'
-            f'请求人：{str(event.user_id)}\n'
-            f'申请信息：{str(event.comment)}\n'
-            f'申请时间：{add_time}'
-        )
-        await bot.send_private_msg(user_id=int(masterList[0]), message=msg)
+async def _friend_add(bot: Bot, event: FriendRequestEvent):
+    add_time = datetime.datetime.now()
+    msg = (
+        '上报好友请求：\n'
+        f'请求人：{str(event.user_id)}\n'
+        f'申请信息：{str(event.comment)}\n'
+        f'申请时间：{add_time}'
+    )
+    await bot.send_private_msg(user_id=int(masterList[0]), message=msg)
+    if event.comment == 'Senrin':
+        await bot.set_friend_add_request(flag=event.flag, approve=True)
+    else:
+        await bot.set_friend_add_request(flag=event.flag, approve=False)
 
 
 @scheduler.scheduled_job('cron', hour='*')
@@ -114,15 +116,38 @@ async def ReportTime():
         result = response.text
     bot = get_bots()[bot_id]
     hour = datetime.datetime.now().hour
-    hour = datetime.datetime.now().hour
-    finger_out = (gaokao_time-datetime.datetime.now()).days
-    gk_msg = f'距离{datetime.datetime.now().year}年高考还有{finger_out}天！\n' if finger_out > 0 else None
+    gaokao_time = datetime.datetime((datetime.datetime.now().year), 6, 7, 9)
+    delta = gaokao_time-datetime.datetime.now()
+
+    # 判定是否为高考期间
+    if datetime.datetime.now().month == 6 and datetime.datetime.now().day in [8, 9, 10]:
+        gk_msg = '高三党们高考加油嗷！！！'
+    elif delta.days < 0:
+        if datetime.datetime.now().day == 7:  # 高考当天
+            gk_msg = '高三党们高考加油嗷！！！'
+        else:  # 次年高考
+            gaokao_time = datetime.datetime(
+                (datetime.datetime.now().year+1), 6, 7)
+            delta = gaokao_time-datetime.datetime.now()
+            finger_out = delta.days+1
+            gk_msg = f'距离{datetime.datetime.now().year+1}年高考仅有{finger_out}天！\n'
+    elif delta.days == 0:  # 24h倒计时
+        gaokao_time = datetime.datetime(
+            (datetime.datetime.now().year), 6, 7, 9)
+        delta = gaokao_time-datetime.datetime.now()
+        finger_out = math.ceil((delta.days*24)+(delta.seconds)/3600)
+        gk_msg = f'距离{datetime.datetime.now().year}年高考仅有{finger_out}小时！\n'
+    else:  # 无特殊情况
+        gaokao_time = datetime.datetime((datetime.datetime.now().year), 6, 7)
+        delta = gaokao_time-datetime.datetime.now()
+        finger_out = delta.days+1
+        gk_msg = f'距离{datetime.datetime.now().year}年高考仅有{finger_out}天！\n'
     msg = (
-            "How time flies!\n"
-            f"现在是北京时间{hour}：00\n"
-            f"{gk_msg}"
-            "-----------------------\n"
-            f"{result}"
+        "How time flies!\n"
+        f"现在是北京时间{hour}：00\n"
+        f"{gk_msg}"
+        "-----------------------\n"
+        f"{result}"
     )
     for GroupID in get_driver().config.GroupList.values():
         await bot.send_group_msg_async(group_id=GroupID, message=msg)
