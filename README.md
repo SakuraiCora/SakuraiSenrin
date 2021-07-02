@@ -1,6 +1,6 @@
 <div align="center">
         <img style="border-radius: 50%;" 
-        src="https://cdn.jsdelivr.net/gh/ Hajimarino-HOPE/SakuraiZer0/docs/img/Senrin-code-Complete.PNG" 
+        src="https://cdn.jsdelivr.net/gh/Hajimarino-HOPE/SakuraiZer0/docs/img/Senrin-code-Complete.PNG" 
         width="150px" 
         height="150px" 
         alt="SakuraiZer0-Logo"/>
