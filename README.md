@@ -1,5 +1,5 @@
 <div align="center">
-        <img src="https://cdn.jsdelivr.net/gh/Hajimarino-HOPE/SakuraiZer0/docs/img/Senrin-code-Complete.PNG" width="150px" height="150px" alt="SakuraiZer0-Logo"/>
+        <img src="https://cdn.jsdelivr.net/gh/Hajimarino-HOPE/SakuraiZer0/docs/img/Senrin-logo.png" width="150px" height="150px" alt="SakuraiZer0-Logo"/>
 
 # SakuraiZer0
 ### 打造一款服务于GalGame玩家的轻量级QQ机器人
