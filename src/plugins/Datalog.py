@@ -44,6 +44,7 @@ from nonebot.adapters.cqhttp.message import Message
 from nonebot.adapters.cqhttp.event import GroupIncreaseNoticeEvent, GroupMessageEvent
 from nonebot.plugin import on_message, on_notice
 
+global memdic
 memdic = {}
 LogPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'datalog.json')
 StartTime = datetime.datetime.now()
