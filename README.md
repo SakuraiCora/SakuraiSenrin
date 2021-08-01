@@ -1,14 +1,14 @@
 <div align="center">
-        <img src="https://cdn.jsdelivr.net/gh/Hajimarino-HOPE/SakuraiZer0/docs/img/Senrin-logo.png" width="150px" height="150px" alt="SakuraiZer0-Logo"/>
+        <img src="https://cdn.jsdelivr.net/gh/Hajimarino-HOPE/SakuraiSenrin/docs/img/Senrin-logo.png" width="150px" height="150px" width="150px" height="150px" alt="SakuraiSenrin-Logo"/>
 
-# SenrinZer0
+# SenrinSenrin
 ### 打造一款服务于GalGame玩家的轻量级QQ机器人
 
 [![](https://img.shields.io/badge/Lang-Python-FF1493)](https://python.org)
 [![](https://img.shields.io/badge/Frame-go_cqhttp-7B68EE)](https://github.com/Mrs4s/go-cqhttp)
 [![](https://img.shields.io/badge/SDK-NoneBot2-3CB371)](https://github.com/nonebot/nonebot2)
 [![](https://img.shields.io/badge/Author-SakuraiCora-F08080)](https://github.com/Hajimarino-HOPE)
-[![](https://img.shields.io/github/license/Hajimarino-HOPE/SakuraiZer0)](https://github.com/Hajimarino-HOPE/SakuraiZer0/blob/main/LICENSE)
+[![](https://img.shields.io/github/license/Hajimarino-HOPE/SakuraiSenrin)](https://github.com/Hajimarino-HOPE/SakuraiSenrin/blob/main/LICENSE)
 
 </div>
 <hr>
@@ -21,6 +21,10 @@
 
 ---
 # 更新
+- 2021.8.1
+  - 完成消息版帮助文档
+  - 修复路径bug
+  - 新增内置词库
 - 2021.7.2
   - 樱井千凛人设V1.0发布
 - 2021.6.30  
@@ -94,9 +98,9 @@
 
 - #study module Q A
 
-  > 示例：#study A Zer0 nmd叫我搞锤子？！
+  > 示例：#study A Senrin nmd叫我搞锤子？！
 
-  - 让Zer0在用户发送 **Q** 的对于 **module** 回答 **A**
+  - 让Senrin在用户发送 **Q** 的对于 **module** 回答 **A**
   - mudule参数：A（全局相应）P（个人相应）
   - Q为感知语（不能含有空格，默认严格匹配，区分大小写）
   - A为应答语（不能含有空格）
@@ -109,7 +113,7 @@
 
 - #lib_manage del class uesr_id key（仅bot管理员）
 
-  > 示例：#lib_manage del public all_users Zer0
+  > 示例：#lib_manage del public all_users Senrin
 
 	- 删除 **studylib['class']['user_id']** 对应的词库条例
 	- class参数：public（全局相应）private（个人响应）
@@ -125,7 +129,7 @@
 
   > 示例：#water
   >
-  > 示例：#water @Zer0
+  > 示例：#water @Senrin
 
 	- 获取@对象的当天在本群的发言次数
 	- 若<@user>为空，则获取自己的发言次数
@@ -196,11 +200,11 @@
 
   > 示例：#info
   >
-  > 示例：#info @Zer0
+  > 示例：#info @Senrin
 
   - 根据有限的信息制作简单资料卡 
   - 若\<@user>为空，则制作自己的资料卡 
-  - ~~（你甚至可以看看Zer0的资料卡）~~ 
+  - ~~（你甚至可以看看Senrin的资料卡）~~ 
 
 </details>
 
@@ -211,7 +215,7 @@
 - 【Reply】回复想搜的图
 	- 通过 **SauceNAO** 提供的API进行搜图 
 	- 搜图结果以**私聊**方式送达
-	- 若持续未收到结果，请添加Zer0为好友
+	- 若持续未收到结果，请添加Senrin为好友
 	> 好友验证码：Senrin（注意区分大小写）
 
 </details>
@@ -242,7 +246,7 @@
 
 ### 扫描层数：4
 
-        SakuraiZer0
+        SakuraiSenrin
         ├── bot.py
         ├── config.py
         ├── costrule.py
@@ -282,6 +286,6 @@
 
 [Mrs4s](https://github.com/Mrs4s): 更新迭代快如疯狗的运行框架 ->  [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
 
-[KaguraYayoi](https://github.com/Fjaxzhy): ~~提供超级高效稳定的精神支持~~ [ReadMe.md](https://github.com/Hajimarino-HOPE/SakuraiZer0/blob/main/README.md) 编写
+[KaguraYayoi](https://github.com/Fjaxzhy): ~~提供超级高效稳定的精神支持~~ [ReadMe.md](https://github.com/Hajimarino-HOPE/SakuraiSenrin/blob/main/README.md) 编写
 
 以及群内提供建议、技术支持的各位沙雕群友
