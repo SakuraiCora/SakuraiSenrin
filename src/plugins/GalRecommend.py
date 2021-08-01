@@ -24,9 +24,9 @@ async def get_img(pic_url):
     async with AsyncClient(proxies={}) as Client:
         _get_sample = await Client.get(url=pic_url)
         get_sample = _get_sample.read()
-        with open(file=os.path.join(os.getcwd(), 'Data_Base\\SamplePicGal.jpg'), mode='wb') as WS:
+        with open(file=os.path.join(os.getcwd(), 'DataBase\\SamplePicGal.jpg'), mode='wb') as WS:
             WS.write(get_sample)
-    pic_url = os.path.join(os.getcwd(), 'Data_Base\\SamplePicGal.jpg')
+    pic_url = os.path.join(os.getcwd(), 'DataBase\\SamplePicGal.jpg')
     return pic_url
 
 
@@ -122,7 +122,7 @@ async def RDL(bot: Bot, event: Event):
     if isinstance(event, MessageEvent):
         if args:
             if args[0] == 'random':
-                await Random_Gal.send('Zer0折寿中......')
+                await Random_Gal.send('Senrin折寿中......')
                 async with AsyncClient() as Client:
                     mg = await get_random_game(Client=Client, event=event)
                 await Random_Gal.finish(Message(mg))
@@ -130,16 +130,16 @@ async def RDL(bot: Bot, event: Event):
                 try:
                     tag = args[1]
                 except:
-                    await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Zer0处理了个寂寞"))
+                    await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
                 else:
-                    await Random_Gal.send('Zer0折寿中......')
+                    await Random_Gal.send('Senrin折寿中......')
                     async with AsyncClient() as Client:
                         mg = await get_tag_game(Client=Client, tag=tag, event=event)
                     await Random_Gal.finish(Message(mg))
             else:
-                await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Zer0处理了个寂寞"))
+                await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
         else:
-            await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Zer0处理了个寂寞"))
+            await Random_Gal.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
 
 
 @Tag_List.handle()

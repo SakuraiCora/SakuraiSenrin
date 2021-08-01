@@ -12,7 +12,7 @@ from nonebot.adapters.cqhttp import Bot
 from nonebot.adapters.cqhttp.event import GroupMessageEvent
 from nonebot.adapters.cqhttp.message import Message
 from nonebot.plugin import on_command
-from costrule import check_white_list_group
+from costrule import check_white_list_all
 
 
 class CostumeGB(ImageFilter.Filter):
@@ -88,7 +88,7 @@ async def get_card(QQ, user_name, sex, title, level, time):
     back_ground.save(save_path)
     return save_path
 
-info = on_command('info', priority=5, rule=check_white_list_group())
+info = on_command('info', priority=5, rule=check_white_list_all())
 
 
 @info.handle()
@@ -103,21 +103,21 @@ async def info_get(bot: Bot, event):
     if isinstance(event, GroupMessageEvent):
         if isinstance(args, int):
             msg = Message(
-                "Zer0正在制作属于你的专属资料卡......\n"
+                "Senrin正在制作属于你的专属资料卡......\n"
                 f"制作对象：[CQ:at,qq={str(args)}]"
             )
             await info.send(msg)
             QQ = int(str(args))
         elif event.to_me == True:
             msg = Message(
-                "嘿嘿没想到吧，Zer0也有资料卡哦！\n"
+                "嘿嘿没想到吧，Senrin也有资料卡哦！\n"
                 f"制作对象：[CQ:at,qq={bot.self_id}]"
             )
             await info.send(msg)
             QQ = int(bot.self_id)
         else:  # 个人记录查询
             msg = Message(
-                "Zer0正在制作属于你的专属资料卡......\n"
+                "Senrin正在制作属于你的专属资料卡......\n"
                 f"制作对象：[CQ:at,qq={event.user_id}]"
             )
             await info.send(msg)

@@ -44,7 +44,7 @@ study = on_command("study", priority=5,
 lib_manage = on_command('lib_manage', priority=5,
                         rule=only_master())  # 定义查询与删除
 get_march = on_message(rule=check_white_list_all(), priority=5)
-StudyPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'picture_lib.json')
+StudyPath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'studylib.json')
 
 with open(StudyPath, 'r', encoding="utf-8") as fr:
     studylib = json.load(fr)
@@ -122,7 +122,7 @@ async def got_study(bot: Bot, event: Event, state: T_State):
                           sort_keys=True, ensure_ascii=False)
         await study.finish('好耶！已经覆盖了原条例！')
     elif result.lower() == 'n':
-        await study.finish('已保留原条例！Zer0又白忙活了......\n草你妈燃起来了！')
+        await study.finish('已保留原条例！Senrin又白忙活了......\n草你妈燃起来了！')
 
 
 @lib_manage.handle()  # 空元素return_help  show展示 del删除(class uesr_id key)
@@ -135,10 +135,10 @@ async def _del_lib(bot: Bot, event: Event, state: dict):
             if arg[0] == 'show':
                 if isinstance(event, PrivateMessageEvent):
                     set_Font = ImageFont.truetype(os.path.join(
-                        os.getcwd(), "Data_Base", 'msyh.ttc'), 30)  # 设置字体属性
+                        os.getcwd(), "DataBase", 'msyh.ttc'), 30)  # 设置字体属性
                     save_path = os.path.join(
-                        os.getcwd(), "Data_Base", "send.jpg")  # 设置保存路径
-                    with open(os.path.join(os.getcwd(), "Data_Base", "studylib.json"), mode="r", encoding='utf-8-sig') as f:
+                        os.getcwd(), "DataBase", "send.jpg")  # 设置保存路径
+                    with open(StudyPath, mode="r", encoding='utf-8-sig') as f:
                         lib = '现有词库如下：\n'+f.read()  # 读取词库str
                     x, _y = set_Font.getsize(max(lib.split('\n'), key=len))
                     y, _x = set_Font.getsize(

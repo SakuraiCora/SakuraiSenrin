@@ -8,6 +8,7 @@
     6.整点报时+通报公告
 """
 from costrule import check_white_list_group
+import json
 import datetime
 import random
 import os
@@ -24,7 +25,10 @@ from nonebot.adapters.cqhttp.event import (FriendRequestEvent, GroupBanNoticeEve
                                            LuckyKingNotifyEvent)
 from nonebot.plugin import on_notice, on_request, require
 
-WelcomeList = ['新人を歓迎する！', '有朋自远方来，不宜用转唬？唬不死再唬！']
+WelcomePath = os.path.join(os.getcwd(), 'DataBase', 'Json', 'studylib.json')
+with open(WelcomePath, 'r', encoding="utf-8") as fr:
+    handle_new_member = json.load(
+        fr)['public']['preinstall_words']['handle_new_member']
 scheduler = require('nonebot_plugin_apscheduler').scheduler  # 定义计划任务
 member_var = on_notice(priority=5, rule=check_white_list_group())
 ban_members = on_notice(priority=5, rule=check_white_list_group())
@@ -36,7 +40,7 @@ gaokao_time = datetime.datetime(datetime.datetime.now().year, 6, 7)
 @member_var.handle()  # 群成员变化检测  迎新 退群通告
 async def _change_menbers(bot: Bot, event):
     if isinstance(event, GroupIncreaseNoticeEvent):  # 增加
-        WelcomeTence = random.choice(WelcomeList)
+        WelcomeTence = random.choice(handle_new_member)
         msg = Message(
             f'[CQ:at,qq={str(event.user_id)}]\n'
             f'{WelcomeTence}\n'
@@ -153,7 +157,7 @@ async def ReportTime():
         await bot.send_group_msg_async(group_id=GroupID, message=msg)
 
 
-@scheduler.scheduled_job('cron', minutes='59')  # 校准时间
+@scheduler.scheduled_job('cron', minute='59')  # 校准时间
 async def repire_time():
     hosts = ['0.cn.pool.ntp.org', '1.cn.pool.ntp.org',
              '2.cn.pool.ntp.org', '3.cn.pool.ntp.org']

@@ -28,7 +28,7 @@ async def _Reply_SearchPic(bot: Bot, event: Event):
         Message(
             f"[CQ:at,qq={event.get_user_id()}]你确定你给我的是一张图片？\n"
             "若持续出此报错，请按照以下步骤搜图：\n"
-            '1.将图片逐张转发至Zer0\n'
+            '1.将图片逐张转发至Senrin\n'
             '2.回复需要搜索的图片并附上“搜图”'
         )
     )
@@ -46,7 +46,11 @@ async def _Reply_SearchPic(bot: Bot, event: Event):
             for numst in range(len(search_list)):
                 msg_url = search_list[numst]
                 # 获取搜索结果
-                search_result = await SauceNAO(numst=numst, pic_url=msg_url)
+                try:
+                    search_result = await SauceNAO(numst=numst, pic_url=msg_url)
+                except:
+                    await Reply_SearchPic.finish('似乎出现了蜜汁错误......图搜到了但没完全搜到......')
+                    return
                 if search_result:
                     result_list.append(search_result)
             if result_list:  # 存在搜索结果
@@ -57,12 +61,12 @@ async def _Reply_SearchPic(bot: Bot, event: Event):
                     )
                     send_msg_result += _add_result
                 if isinstance(event, GroupMessageEvent):
-                    await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] Zer0从SauceNAO获得了搜图结果，并将以私聊方式发送！\nPS:若持续未收到图片，请添加Zer0为好友！'))
+                    await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] Senrin从SauceNAO获得了搜图结果，并将以私聊方式发送！\nPS:若持续未收到图片，请添加Senrin为好友！'))
                     await bot.send_private_msg(user_id=event.user_id, message=Message(send_msg_result))
                 elif isinstance(event, PrivateMessageEvent):
                     await Reply_SearchPic.send(Message('好耶！找到图咯！\n'+send_msg_result))
             else:  # 不存在搜索结果
-                await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] 暂无相关信息，Zer0搜了个寂寞'))
+                await Reply_SearchPic.send(Message(f'[CQ:at,qq={event.get_user_id()}] 暂无相关信息，Senrin搜了个寂寞'))
         else:  # 无图
             await Reply_SearchPic.finish(send_except_msg)
     await Reply_SearchPic.finish()
@@ -80,7 +84,7 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
         if similarity < 50.0:
             return None
         SamplePath = os.path.join(
-            os.getcwd(), 'Data_Base', f'SamplePic{numst+1}.jpg')
+            os.getcwd(), 'DataBase', f'SamplePic{numst+1}.jpg')
         pic_url = result['results'][0]['header']['thumbnail']
         async with AsyncClient(proxies={}) as Client:
             _get_sample = await Client.get(url=pic_url)

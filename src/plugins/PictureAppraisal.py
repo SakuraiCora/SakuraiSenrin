@@ -141,7 +141,7 @@ async def _repire_lib(bot: Bot, event: Event):
         Message(
             f"[CQ:at,qq={event.get_user_id()}]你确定你给我的是一张图片？\n"
             "若持续出此报错，请按照以下步骤修正：\n"
-            '1.将图片逐张转发至Zer0\n'
+            '1.将图片逐张转发至Senrin\n'
             '2.回复需要修正图片并附上“修正”'
         )
     )
@@ -152,7 +152,7 @@ async def _repire_lib(bot: Bot, event: Event):
                 if _msg.type == 'image':
                     check_img = True
                     picture_lib[_msg.data['file']] = '合规'
-                    await repire_lib.send('那啥......Zer0已经去把数据库揍了一顿了\n'
+                    await repire_lib.send('那啥......Senrin已经去把数据库揍了一顿了\n'
                                           '应该不会发疯了吧......\n'
                                           '修正完毕')
                 else:
@@ -170,7 +170,7 @@ async def _repire_lib(bot: Bot, event: Event):
                     if _msg.type == 'image':
                         check_img = True
                         picture_lib[_msg.data['file']] = '合规'
-                        await repire_lib.send('那啥......Zer0已经去把数据库揍了一顿了\n'
+                        await repire_lib.send('那啥......Senrin已经去把数据库揍了一顿了\n'
                                               '应该不会发疯了吧......\n'
                                               '修正完毕')
                     else:

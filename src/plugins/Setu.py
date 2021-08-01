@@ -161,7 +161,7 @@ async def _command_setu(bot: Bot, event: Event, state: dict):
             checked_type = check_tpye(arg)
             if checked_type == False:
                 setu = None
-                await command_setu.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Zer0处理了个寂寞"))
+                await command_setu.finish(Message(f"[CQ:at,qq={event.user_id}]传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
             else:
                 if arg[0] == 'random':
                     level, num = arg[1], int(arg[2])
@@ -170,7 +170,7 @@ async def _command_setu(bot: Bot, event: Event, state: dict):
                     if isinstance(last_time_command, datetime.datetime):
                         if (start_time-last_time_command).seconds <= 60:
                             if str(event.user_id) not in masterList:
-                                await command_setu.finish("我球球你了让Zer0歇一会儿吧......爪巴涩图很累的说......")
+                                await command_setu.finish("我球球你了让Senrin歇一会儿吧......爪巴涩图很累的说......")
                                 return
                             else:
                                 await command_setu.send("我爪巴爪巴......这就去......")
@@ -191,7 +191,7 @@ async def _command_setu(bot: Bot, event: Event, state: dict):
                     if isinstance(last_time_command, datetime.datetime):
                         if (start_time-last_time_command).seconds <= 60:
                             if str(event.user_id) not in masterList:
-                                await command_setu.finish("我球球你了让Zer0歇一会儿吧......爪巴涩图很累的说......")
+                                await command_setu.finish("我球球你了让Senrin歇一会儿吧......爪巴涩图很累的说......")
                                 return
                             else:
                                 await command_setu.send("我爪巴爪巴......这就去......")
@@ -214,7 +214,7 @@ async def _command_setu(bot: Bot, event: Event, state: dict):
             checked_type = check_tpye(arg)
             if checked_type == False:
                 setu = None
-                await command_setu.finish("传入了不正确的参数......\n然后指令坏掉了，Zer0处理了个寂寞")
+                await command_setu.finish("传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞")
             else:
                 if arg[0] == 'random':
                     level, num = arg[1], arg[2]
@@ -266,7 +266,7 @@ async def _regex_setu_random(bot: Bot, event: Event, state: dict):
             if isinstance(last_time_Rrandom, datetime.datetime):
                 if (start_time-last_time_Rrandom).seconds <= 5:
                     if str(event.user_id) not in masterList:
-                        await regex_setu_random.finish("我球球你了让Zer0歇一会儿吧......爪巴涩图很累的说......")
+                        await regex_setu_random.finish("我球球你了让Senrin歇一会儿吧......爪巴涩图很累的说......")
                         return
                     else:
                         await regex_setu_random.send("我爪巴爪巴......这就去......")
@@ -324,7 +324,7 @@ async def _regex_setu_search(bot: Bot, event: Event, state: dict):
             elif num in word_to_int:
                 num = word_to_int[num]
             else:
-                await regex_setu_search.finish("呐很抱歉呢......Zer0这里只有十张以内的涩图的说......")
+                await regex_setu_search.finish("呐很抱歉呢......Senrin这里只有十张以内的涩图的说......")
         else:
             key = re.findall(r'^[来整]点(\S*?)[色涩黄]图$',
                              str(event.get_message()))[0]  # 获取关键词
@@ -337,7 +337,7 @@ async def _regex_setu_search(bot: Bot, event: Event, state: dict):
             if isinstance(last_time_command, datetime.datetime):
                 if (start_time-last_time_command).seconds <= 60:
                     if str(event.user_id) not in masterList:
-                        await regex_setu_search.finish("我球球你了让Zer0歇一会儿吧......爪巴涩图很累的说......")
+                        await regex_setu_search.finish("我球球你了让Senrin歇一会儿吧......爪巴涩图很累的说......")
                         return
                     else:
                         await regex_setu_search.send("我爪巴爪巴......这就去......")
