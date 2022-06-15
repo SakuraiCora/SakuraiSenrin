@@ -257,37 +257,75 @@
 
 ### 扫描层数：4
 
-        SakuraiSenrin
-        ├── bot.py
-        ├── config.py
-        ├── costrule.py
-        ├── DataBase
-        │   ├── HeadIMG
-        │   ├── HelpTXT(帮助文档省略)
-        │   ├── Json
-        │   │   ├── datalog.json
-        │   │   ├── picture_lib.json
-        │   │   └── studylib.json
-        │   ├── msyh.ttc
-        │   └── SearchIMG
-        ├── docker-compose.yml
-        ├── Dockerfile
-        ├── LICENSE
-        ├── logo.jpg
-        ├── pyproject.toml
-        ├── README.md
-        └── src
-        └── plugins
-                ├── Datalog.py
-                ├── GalRecommend.py
-                ├── Help.py
-                ├── Info.py
-                ├── Notices.py
-                ├── PictureAppraisal.py
-                ├── SearchPic.py
-                ├── Setu.py
-                ├── Study.py
-                └── TextAppraisal.py
+  SakuraiSenrin
+
+    ├── Achieve
+    │   └── Gal
+    │       ├── config.py
+    │       ├── HandleHTML.py
+    │       └── __init__.py
+    ├── bot.py
+    ├── config.py
+    ├── Data
+    ├── docker-compose.yml
+    ├── Dockerfile
+    ├── Docs
+    │   └── img
+    │       └── Senrin-logo.png
+    ├── LICENSE
+    ├── Plugins
+    │   ├── Datalog
+    │   │   ├── Datalog.py
+    │   │   └── __init__.py
+    │   ├── Help.py
+    │   ├── Info.py
+    │   ├── Notices.py
+    │   ├── PictureAppraisal.py
+    │   ├── SearchPic
+    │   │   ├── config.py
+    │   │   ├── handle.py
+    │   │   └── __init__.py
+    │   ├── Setu
+    │   │   ├── config.py
+    │   │   ├── handle_setu.py
+    │   │   └── __init__.py
+    │   ├── Study.py
+    │   └── TextAppraisal.py
+    ├── README.md
+    ├── requirements.txt
+    ├── Resources
+    │   ├── Fonts
+    │   │   ├── msyh.ttc
+    │   │   └── zsjt.ttf
+    │   ├── HeadIMG
+    │   │   ├── 1479559098_big.jpg
+    │   │   └── 1479559098_min.jpg
+    │   ├── HelpTXT
+    │   │   ├── ASTD.txt
+    │   │   ├── AWHD.txt
+    │   │   ├── HelpList.txt
+    │   │   ├── INFO.txt
+    │   │   ├── RGAL.txt
+    │   │   ├── SETU.txt
+    │   │   ├── SPIC.txt
+    │   │   └── WTER.txt
+    │   ├── Json
+    │   │   ├── ban.json
+    │   │   ├── datalog.json
+    │   │   ├── picture_lib.json
+    │   │   └── wordbank.json
+    │   ├── SearchIMG
+    │   │   └── ExampleIMG.png
+    │   ├── send.jpg
+    │   └── WaterSend.jpg
+    └── Utils
+        ├── Builder.py
+        ├── CustomRule.py
+        ├── ImageUtils.py
+        ├── TimeUtils.py
+        ├── TypeChecker.py
+        ├── UserSettingUtils.py
+        └── __init__.py
 
 <hr>
 
