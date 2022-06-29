@@ -1,6 +1,9 @@
+import base64
 import os
 import aiofiles
+import sqlite3
 
+from io import BytesIO
 from httpx import AsyncClient
 from PIL import ImageFilter, Image, ImageDraw, ImageFont
 from nonebot.adapters.cqhttp import MessageSegment, Message
@@ -76,9 +79,9 @@ async def get_info_card(QQ:int, user_name:str, sex:str, title:str, level:str, ti
     w, h = set_Font.getsize(cr)
     write_words.text(((640-w)/2, 600), cr, fill="#FFFFFF",  # type:ignore
                      font=set_Font)
-    save_path = os.path.join(os.getcwd(), "Resources", "HeadSend.jpg")  # 设置保存路径
-    back_ground.save(save_path)
-    return Message(MessageSegment.image(f'file:///{save_path}'))
+    imgaeBytes = BytesIO()
+    back_ground.save(imgaeBytes,format="png")
+    return Message(MessageSegment.image(imgaeBytes))
 
 async def get_water_card(member_info:list[tuple[int,str,int]]) -> Message:
     """
@@ -136,9 +139,9 @@ async def get_water_card(member_info:list[tuple[int,str,int]]) -> Message:
         Final_IMG.paste(_item,(0,Y_left,640,Y_right))
         Y_left += 100
         Y_right += 100
-    save_path = os.path.join(os.getcwd(), "Resources", "WaterSend.jpg")  # 设置保存路径
-    Final_IMG.save(save_path)
-    return Message(MessageSegment.image(f'file:///{save_path}'))
+    imgaeBytes = BytesIO()
+    Final_IMG.save(imgaeBytes,format="png")
+    return Message(MessageSegment.image(imgaeBytes))
 
 async def get_head_img(QQ) -> str:
     async with AsyncClient(proxies={}) as Client:
@@ -149,3 +152,59 @@ async def get_head_img(QQ) -> str:
     async with aiofiles.open(path_big, mode='wb') as Photo_big:
         await Photo_big.write(response_big)
     return (f'file:///{path_big}')
+
+async def makeGalImg(tag:str, index:int) -> Message:
+    """
+        制作GalGme推荐图片
+    """
+    try:
+        conn = sqlite3.connect(".\\Resources\\gal.db")
+        galdb = conn.cursor()
+    except:
+        return Message("[文件缺失：Galgamedatabase]\ngal.db缺失，请检查项目完整性")
+    else:
+        sql = f'SELECT * FROM "{tag}" WHERE "index" = {index}'
+        res = galdb.execute(sql).fetchone()
+        pic:bytes = res[1]
+        words:str = res[2]
+        wordLiSt = words.split("\n")
+        wordLiSt.remove("")
+        introduce = wordLiSt[0]
+        introList = []
+        for i in range((len(introduce)//17)+1):
+            i = i+1
+            if i > 1:
+                _ = "                  "+introduce[(i-1)*17:i*17]
+            else:
+                _=introduce[(i-1)*17:i*17]
+            introList.append(_)
+        wordLiSt.remove(wordLiSt[0])
+        img = Image.open(BytesIO(pic))
+        w, h = img.size
+        w_s = int(w*3)
+        h_s = int(h*3)
+        img = img.resize((w_s, h_s),Image.ANTIALIAS)    #初步放大完成
+
+        background = Image.open('.\\Resources\\background.png')
+        background.paste(img, (80,80))
+
+        set_Font = ImageFont.truetype(os.path.join(os.getcwd(),  "Resources", 'Fonts', 'STXINWEI.TTF'), 50)  # 设置字体属性
+        
+        a,b = background.size
+        try:
+            _ = Image.new("L", (a-80-w_s-180 ,h_s-17))  #可写字的区域
+        except:
+            return Message('[处理错误：ImgBuilder]\nSenrin脑子坏了T_T，再来一次吧...')
+        write_words = ImageDraw.ImageDraw(background)
+        set_h = 0
+        for x in introList:
+            write_words.text((660, 150+set_h), x, fill="#203864", font=set_Font) 
+            set_h = set_h + 57
+
+        for x in wordLiSt:
+            write_words.text((660, 150+set_h), x, fill="#203864", font=set_Font) 
+            set_h = set_h + 57
+
+        imgaeBytes = BytesIO()
+        background.save(imgaeBytes,format="png")
+        return Message(MessageSegment.image(imgaeBytes))

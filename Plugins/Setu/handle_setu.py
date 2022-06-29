@@ -15,7 +15,7 @@ async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # хоЪф
         post_data = {"apikey": LOLICON_API, "keyword": key, "num": num}
     else:
         post_data = {}
-    async with AsyncClient(proxies=PROXY) as Client:
+    async with AsyncClient(proxies={}) as Client:
         host = "http://api.lolicon.app/setu/v2/"
         response = await Client.get(url=host, params=post_data)
         result = response.json()

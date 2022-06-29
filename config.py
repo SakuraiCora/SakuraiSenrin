@@ -12,7 +12,7 @@ BAIDU_CLIENT_SECRET:str = ''
 LOLICON_API:str = ''    
 SAUCENAO_API:str = ''
 
-REPORT_LIST:list[int] = []   #消息上报的QQ号码
+REPORT_LIST:list[int] = [1479559098]   #消息上报的QQ号码
 SETU_PATH:str = ''  #你的涩图本地储存路径   e.g: C:\\setu
 
 PROXY:str = ''  #可能需要用到代理 e.g: http://127.0.0.1:10677 记得配置PAC，图片鉴定不能外网访问（代理配置错误直接给你404）

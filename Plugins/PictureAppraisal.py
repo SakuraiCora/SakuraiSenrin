@@ -43,7 +43,7 @@ get_pic = on_message(priority=5, rule=Check_PA_Groups())
 
 @scheduler.scheduled_job('cron', day='1')  # 每月一日重获tocken
 async def _get_token():
-    async with AsyncClient() as Client:
+    async with AsyncClient(proxies={}) as Client:
         host = 'https://aip.baidubce.com/oauth/2.0/token'
         PostData = {'grant_type': 'client_credentials',
                     'client_id': BAIDU_CLIENT_ID,
@@ -61,7 +61,7 @@ async def _get_token():
 @get_pic.handle()
 async def _get_pic(bot: Bot, event: GroupMessageEvent):
     async def Apprasial():
-        async with AsyncClient() as Client:
+        async with AsyncClient(proxies={}) as Client:
             try:
                 access_token = picture_lib['token']
             except:
