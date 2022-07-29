@@ -12,14 +12,14 @@ import datetime
 import random
 import os
 import math
-from ntplib import NTPClient
+from io import BytesIO
 from httpx import AsyncClient
 from Utils.CustomRule import check_white_list, GIDS
 from Utils.ImageUtils import get_head_img
 from nonebot import get_bot
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.message import MessageSegment
-from nonebot.adapters.cqhttp.event import (FriendRequestEvent, GroupBanNoticeEvent,
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.message import MessageSegment
+from nonebot.adapters.onebot.v11.event import (FriendRequestEvent, GroupBanNoticeEvent,
                                            GroupDecreaseNoticeEvent,
                                            GroupIncreaseNoticeEvent,
                                            LuckyKingNotifyEvent)
@@ -30,37 +30,41 @@ WelcomePath = os.path.join(os.getcwd(), 'Resources', 'Json', 'wordbank.json')
 
 with open(WelcomePath, 'r', encoding="utf-8") as fr:
     handle_new_member = json.load(fr)['public']['preinstall_words']['handle_new_member']
-member_var = on_notice(priority=5, rule=check_white_list())
+member_inc = on_notice(priority=5, rule=check_white_list())
+member_dec = on_notice(priority=5, rule=check_white_list())
 ban_members = on_notice(priority=5, rule=check_white_list())
 lucky_king = on_notice(priority=5, rule=check_white_list())
 friend_add = on_request(priority=5)
 gaokao_time = datetime.datetime(datetime.datetime.now().year, 6, 7)
 
 
-@member_var.handle()  # 群成员变化检测  迎新 退群通告
-async def _change_menbers(bot: Bot, event):
+@member_inc.handle()  # 群成员变化检测  迎新 退群通告
+async def _inc_menbers(bot: Bot, event: GroupIncreaseNoticeEvent):
     HeadImg = await get_head_img(event.user_id)
-    if isinstance(event, GroupIncreaseNoticeEvent):  # 增加
-        WelcomeTence = random.choice(handle_new_member)
+    WelcomeTence = random.choice(handle_new_member)
+    msg = (
+        MessageSegment.image(BytesIO(HeadImg))
+        +MessageSegment.at(event.user_id)
+        +MessageSegment.text(f'{WelcomeTence}\n')
+        +MessageSegment.text('这里是樱井千凛Senrin，请多指教~\n')
+        +MessageSegment.text('可发送#help以获取帮助')
+    )
+    await member_inc.finish(msg)
+
+@member_dec.handle()
+async def _dec_menbers(bot: Bot, event: GroupDecreaseNoticeEvent):
+    HeadImg = await get_head_img(event.user_id)
+    if event.operator_id == event.user_id:
         msg = (
-            MessageSegment.at(event.user_id)
-            +MessageSegment.text(f'{WelcomeTence}\n')
-            +MessageSegment.text('这里是樱井千凛Senrin，请多指教~\n')
-            +MessageSegment.text('可发送#help以获取帮助')
+            MessageSegment.text(f"悲！{event.user_id}润了......\n")
+            +MessageSegment.image(BytesIO(HeadImg))
         )
-        await member_var.finish(msg)
-    elif isinstance(event, GroupDecreaseNoticeEvent):  # 减少
-        if event.operator_id == event.user_id:
-            msg = (
-                MessageSegment.text(f"悲！{event.user_id}润了......\n")
-                +MessageSegment.image(HeadImg)
-            )
-        else:
-            msg = (
-                MessageSegment.text(f"乐，有幸目击{event.user_id}被杀\n")
-                +MessageSegment.image(HeadImg)
-            )
-        await member_var.finish(msg)
+    else:
+        msg = (
+            MessageSegment.text(f"乐，有幸目击{event.user_id}被杀\n")
+            +MessageSegment.image(BytesIO(HeadImg))
+        )
+    await member_dec.finish(msg)
 
 
 @ban_members.handle()  # 禁言
@@ -146,13 +150,3 @@ async def ReportTime():
     )
     for GroupID in GIDS.values():
         await bot.send_group_msg_async(group_id=GroupID, message=msg)
-
-
-@scheduler.scheduled_job('cron', minute='59')  # 校准时间
-async def repire_time():
-    hosts = ['0.cn.pool.ntp.org', '1.cn.pool.ntp.org',
-             '2.cn.pool.ntp.org', '3.cn.pool.ntp.org']
-    r = NTPClient().request(random.choice(hosts), port='ntp', version=4, timeout=5)
-    t = r.tx_time
-    _date, _time = str(datetime.datetime.fromtimestamp(t))[:22].split(' ')
-    os.system('date {} && time {}'.format(_date, _time))

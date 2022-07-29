@@ -1,3 +1,5 @@
+#   已废除 2022-7-28
+
 """
     TextAppraisal包含的功能：
     1.初步鉴定消息是否为文字
@@ -8,9 +10,9 @@ from Utils.CustomRule import check_white_list
 import re
 from datetime import datetime
 from nonebot import get_driver
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import GroupMessageEvent
-from nonebot.adapters.cqhttp.message import Message
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11.message import Message
 from nonebot.plugin import on_message
 SuperUsers:set[str] = get_driver().config.superusers
 

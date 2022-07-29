@@ -1,12 +1,13 @@
 import os
 import re
 import time
+from io import BytesIO
 from httpx import AsyncClient
-from nonebot.adapters.cqhttp.message import MessageSegment
+from nonebot.adapters.onebot.v11.message import MessageSegment
 from config import SAUCENAO_API as api_key
 from config import PROXY
 
-async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return示例：(1,NAO_result)
+async def SauceNAO(numst:int, pic_url:str):  # 搜图结果，空则返回None，return示例：(1,NAO_result)
     if PROXY == "":
         PROXY_ = {}
     else:
@@ -21,8 +22,6 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
     else:
         if similarity < 50.0:
             return None
-        fileName = f'{time.time()}SamplePic{numst+1}.jpg'
-        SamplePath = f'.\\Resources\\SearchIMG\\{fileName}'
         pic_url = result['results'][0]['header']['thumbnail']
         if PROXY == "":
             PROXY_ = {}
@@ -31,9 +30,6 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
         async with AsyncClient(proxies=PROXY_) as Client:
             _get_sample = await Client.get(url=pic_url)
             get_sample = _get_sample.read()
-            with open(file=SamplePath, mode='wb') as WS:
-                WS.write(get_sample)
-        pic_url = SamplePath    #完成处理后得到路径
         try:
             source = result['results'][0]['data']['source']
         except:
@@ -47,7 +43,7 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
             illust = pattern.findall(source)[0]
             NAO_result = (
                 MessageSegment.text("检测到图源于Pixiv\n")
-                +MessageSegment.image(f"file:///{pic_url}]\n")
+                +MessageSegment.image(BytesIO(get_sample))
                 +MessageSegment.text(f'相似系数：{similarity}\n')
                 +MessageSegment.text(f"插画画师：{creator}\n")
                 +MessageSegment.text(f'插画ID：{illust}\n')
@@ -60,7 +56,7 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
             title = result['results'][0]['data']['title']
             NAO_result = (
                 MessageSegment.text("检测到图源于Pixiv\n")
-                +MessageSegment.image(f"file:///{pic_url}]\n")
+                +MessageSegment.image(BytesIO(get_sample))
                 +MessageSegment.text(f'相似系数：{similarity}\n')
                 +MessageSegment.text(f'插画名称：{title}\n')
                 +MessageSegment.text(f"插画画师：{creator}\n")
@@ -70,7 +66,7 @@ async def SauceNAO(numst, pic_url):  # 搜图结果，空则返回None，return�
         else:  # 其他来源
             source = result['results'][0]['data']['ext_urls'][0]
             NAO_result = (
-                MessageSegment.image(f"file:///{pic_url}]\n")
+                MessageSegment.image(BytesIO(get_sample))
                 +MessageSegment.text(f'相似系数：{similarity}\n')
                 +MessageSegment.text(f'图片作者：{creator}\n')
                 +MessageSegment.text(f'图片源址：{source}')

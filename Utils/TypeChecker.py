@@ -1,4 +1,5 @@
-from nonebot.adapters.cqhttp.event import MessageEvent
+from tkinter import E
+from nonebot.adapters.onebot.v11.event import MessageEvent
 
 
 async def ScanNumber(event: MessageEvent):
@@ -20,10 +21,13 @@ async def ScanNumber(event: MessageEvent):
         if _msg.type == 'at': 
             args_at = int(_msg.data['qq'])
         elif _msg.type == 'text':
-            try:
-                args_text = int(_msg.data['text'])
-            except:
-                pass
+            for _ in _msg.data['text'].split(" "):
+                try:
+                    args_text = int(_)
+                except:
+                    pass
+                else:
+                    break
     if args_at:
         args = args_at
     elif args_text:
@@ -36,20 +40,20 @@ async def ScanNumber(event: MessageEvent):
 
 def SetuCommandTypeChecker(arg) -> bool:  # 检查涩图命令格式
     if arg:
-        if arg[0] == 'random':
+        if arg[1] == 'random':
             try:
-                level = int(arg[1])
-                num = int(arg[2])
+                level = int(arg[2])
+                num = int(arg[3])
             except:
                 check_type = False
             else:
-                if level in [1, 2, 0] and num <= 10:
+                if level in [1, 2, 0] and num <= 5:
                     check_type = True
                 else:
                     check_type = False
-        elif arg[0] == 'search':
+        elif arg[1] == 'search':
             try:
-                num = int(arg[2])
+                num = int(arg[3])
             except:
                 check_type = False
             else:

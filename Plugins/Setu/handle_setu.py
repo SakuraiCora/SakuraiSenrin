@@ -2,7 +2,7 @@ import os
 import asyncio
 import random
 import aiohttp
-from nonebot.adapters.cqhttp.message import MessageSegment, Message
+from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from httpx import AsyncClient
 from config import LOLICON_API, SETU_PATH, PROXY
 
@@ -63,9 +63,12 @@ async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # 定�
 
 async def random_setu(Rmodle, level, num) -> tuple[bool,list[Message]]:  # 随机涩图函数封装
     if Rmodle == 'regex':
-        pixivID = random.choice(os.listdir(SETU_PATH))
-        way = os.path.join(SETU_PATH, pixivID)  # 从本地库整一个
-        setu = (True,[Message(MessageSegment.image(f"file:///{way}"))])
+        img = []
+        for _ in range(num):
+            pixivID = random.choice(os.listdir(SETU_PATH))
+            way = os.path.join(SETU_PATH, pixivID)  # 从本地库整一个
+            img.append(Message(MessageSegment.image(f"file:///{way}")))
+        setu = (True,img)
     else:
         modle = 'random'
         setu = await get_setu(modle=modle, level=level, num=num, key=None)

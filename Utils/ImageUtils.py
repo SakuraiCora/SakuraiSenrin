@@ -1,12 +1,10 @@
-import base64
 import os
-import aiofiles
 import sqlite3
 
 from io import BytesIO
 from httpx import AsyncClient
 from PIL import ImageFilter, Image, ImageDraw, ImageFont
-from nonebot.adapters.cqhttp import MessageSegment, Message
+from nonebot.adapters.onebot.v11 import MessageSegment, Message
 
 class CostumeGB(ImageFilter.Filter):
     name = "GaussianBlur"
@@ -28,24 +26,16 @@ async def get_info_card(QQ:int, user_name:str, sex:str, title:str, level:str, ti
         制作资料卡
     """
     async with AsyncClient(proxies={}) as Client:
-        path_min = os.path.join(os.getcwd(), 'Resources',
-                                'HeadIMG', f'{QQ}_min.jpg')
-        path_big = os.path.join(os.getcwd(), 'Resources',
-                                'HeadIMG', f'{QQ}_big.jpg')
         host_min = f'http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=4'
         host_big = f'http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=640'
         response_min = await Client.get(url=host_min)
         response_big = await Client.get(url=host_big)
-        response_min = response_min.read()
-        response_big = response_big.read()
-        async with aiofiles.open(path_min, mode='wb') as Photo_min:
-            await Photo_min.write(response_min)
-        async with aiofiles.open(path_big, mode='wb') as Photo_big:
-            await Photo_big.write(response_big)
+        response_min = BytesIO(response_min.read())
+        response_big = BytesIO(response_big.read())
     """虚化背景"""
-    back_ground = Image.open(path_big).filter(CostumeGB(radius=60))
+    back_ground = Image.open(response_big).filter(CostumeGB(radius=60))
     """切圆头像"""
-    img_head = Image.open(path_min)
+    img_head = Image.open(response_min)
     w = 140
     alpha_layer = Image.new('L', (w, w))
     draw = ImageDraw.ImageDraw(alpha_layer)
@@ -96,24 +86,16 @@ async def get_water_card(member_info:list[tuple[int,str,int]]) -> Message:
         name = user_name if len(user_name) <=12 else user_name[:12]+"..."
 
         async with AsyncClient(proxies={}) as Client:
-            path_min = os.path.join(os.getcwd(), 'Resources',
-                                    'HeadIMG', f'{QQ}_min.jpg')
-            path_big = os.path.join(os.getcwd(), 'Resources',
-                                    'HeadIMG', f'{QQ}_big.jpg')
             host_min = f'http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=3'
             host_big = f'http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=640'
             response_min = await Client.get(url=host_min)
             response_big = await Client.get(url=host_big)
-            response_min = response_min.read()
-            response_big = response_big.read()
-            async with aiofiles.open(path_min, mode='wb') as Photo_min:
-                await Photo_min.write(response_min)
-            async with aiofiles.open(path_big, mode='wb') as Photo_big:
-                await Photo_big.write(response_big)
+            response_min = BytesIO(response_min.read())
+            response_big = BytesIO(response_big.read())
         """虚化背景"""
-        back_ground = Image.open(path_big).filter(CostumeGB(radius=60))
+        back_ground = Image.open(response_big).filter(CostumeGB(radius=60))
         """切圆头像"""
-        img_head = Image.open(path_min)
+        img_head = Image.open(response_min)
         w = 100
         alpha_layer = Image.new('L', (w, w))
         draw = ImageDraw.ImageDraw(alpha_layer)
@@ -143,22 +125,18 @@ async def get_water_card(member_info:list[tuple[int,str,int]]) -> Message:
     Final_IMG.save(imgaeBytes,format="png")
     return Message(MessageSegment.image(imgaeBytes))
 
-async def get_head_img(QQ) -> str:
+async def get_head_img(QQ) -> bytes:
     async with AsyncClient(proxies={}) as Client:
-        path_big = os.path.join(os.getcwd(), 'Resources','HeadIMG', f'{QQ}_big.jpg')
         host_big = f'http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=640'
         response_big = await Client.get(url=host_big)
-    response_big = response_big.read()
-    async with aiofiles.open(path_big, mode='wb') as Photo_big:
-        await Photo_big.write(response_big)
-    return (f'file:///{path_big}')
+    return response_big.read()
 
 async def makeGalImg(tag:str, index:int) -> Message:
     """
         制作GalGme推荐图片
     """
     try:
-        conn = sqlite3.connect(".\\Resources\\gal.db")
+        conn = sqlite3.connect(os.path.join(os.getcwd(),"Resources","gal.db"))
         galdb = conn.cursor()
     except:
         return Message("[文件缺失：Galgamedatabase]\ngal.db缺失，请检查项目完整性")
@@ -185,7 +163,7 @@ async def makeGalImg(tag:str, index:int) -> Message:
         h_s = int(h*3)
         img = img.resize((w_s, h_s),Image.ANTIALIAS)    #初步放大完成
 
-        background = Image.open('.\\Resources\\background.png')
+        background = Image.open(os.path.join(os.getcwd(),"Resources","background.png"))
         background.paste(img, (80,80))
 
         set_Font = ImageFont.truetype(os.path.join(os.getcwd(),  "Resources", 'Fonts', 'STXINWEI.TTF'), 50)  # 设置字体属性
@@ -208,3 +186,20 @@ async def makeGalImg(tag:str, index:int) -> Message:
         imgaeBytes = BytesIO()
         background.save(imgaeBytes,format="png")
         return Message(MessageSegment.image(imgaeBytes))
+
+async def makeLibImg(StudyPath) -> Message:
+    """
+        制作词库集合图片
+    """
+    set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", "Fonts", 'msyh.ttc'), 30)  # 设置字体属性
+    with open(StudyPath, mode="r", encoding='utf-8-sig') as f:
+        lib = '现有词库如下：\n'+f.read()  # 读取词库str
+    x, _y = set_Font.getsize(max(lib.split('\n'), key=len))
+    y, _x = set_Font.getsize((len(lib.split('\n'))*'00'))  # 斗长度！！！！！
+    image = Image.new(mode='RGB', size=(x, y), color=(255, 255, 255))  # 新建画布
+    draw = ImageDraw.ImageDraw(image)  # 写字
+    draw.text((0, 0), lib, font=set_Font,fill="#000000", direction=None)  # 开始画！
+
+    imgaeBytes = BytesIO()
+    image.save(imgaeBytes,format="png")
+    return Message(MessageSegment.image(imgaeBytes))

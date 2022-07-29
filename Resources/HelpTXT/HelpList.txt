@@ -1,9 +1,9 @@
 ﻿---------------------------
-AWHD 网页版帮助文档
-RGAL GalGame随机推荐
-WTER 群聊发言次数查询
-INFO 制作资料卡
-ASTD 词库学习
-SPIC 以图搜图
-SETU 涩图
+#help AWHD 网页版帮助文档
+#help RGAL GalGame随机推荐
+#help WTER 群聊发言次数查询
+#help INFO 制作资料卡
+#help ASTD 词库学习
+#help SPIC 以图搜图
+#help SETU 涩图
 ---------------------------

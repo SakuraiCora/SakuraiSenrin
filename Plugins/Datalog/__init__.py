@@ -3,21 +3,20 @@
     1.重置模块（自动 手动）
     2.吹氵记录（写入 查询）
 """
-import os
 import json
 import datetime
 from nonebot.permission import SUPERUSER
 from Utils.CustomRule import check_white_list
 from Utils.TypeChecker import ScanNumber
 from nonebot import get_bot, on_command, require
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import GroupIncreaseNoticeEvent, GroupMessageEvent, MessageEvent
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import GroupIncreaseNoticeEvent, GroupMessageEvent, MessageEvent
 from nonebot.plugin import on_message, on_notice
 
-from config import GIDS
 from .Datalog import *
+from config import GIDS
 
-LogPath = os.path.join(os.getcwd(), 'Resources', 'Json', 'datalog.json')
+
 StartTime = datetime.datetime.now()
 scheduler = getattr(require('nonebot_plugin_apscheduler'),'scheduler')  # 定义计划任务
 water = on_command("water", priority=5, rule=check_white_list())  # 定义water查询命令
@@ -44,23 +43,23 @@ async def _scheduled_job():
 
 
 @resetLog.handle()  # 手动重置
-async def _resetLog_getCMD(bot: Bot, event: MessageEvent, state: dict):
+async def _resetLog_getCMD(bot: Bot, event: MessageEvent):
     await start(LogPath)
     await resetLog.finish()
 
 
 @water.handle()  # 发出查询请求
 async def _water_get(bot: Bot, event: MessageEvent):
-    args = str(event.get_message()).split()
-    if args:
-        if args[0] == 'list':
+    args = str(event.get_message()).split(" ")
+    if len(args) > 1:
+        if args[1] == 'list':
             await water.send("[water正常:Succeed]\nLoading...")
             arg = "list"
         else:
             arg = await ScanNumber(event)
     else:
         arg = event.user_id
-    _msg = await water_get(arg, LogPath, event, bot)
+    _msg = await water_get(arg, event, bot)
     await water.finish(_msg)
 
 
@@ -72,5 +71,5 @@ async def _add_new_menber(bot: Bot, event: GroupIncreaseNoticeEvent):
 
 @writeLog.handle()  # 吹氵记录增加
 async def _add_number_of_water(bot: Bot, event: GroupMessageEvent):
-    await add_number_of_water(getMendic(), LogPath, bot, event)
+    await add_number_of_water(getMendic(), bot, event)
     await writeLog.finish()

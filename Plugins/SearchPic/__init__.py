@@ -8,10 +8,9 @@
 """
 import traceback
 
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import (
-    MessageEvent, GroupMessageEvent, PrivateMessageEvent)
-from nonebot.adapters.cqhttp.message import MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import MessageEvent
+from nonebot.adapters.onebot.v11.message import MessageSegment, Message
 from nonebot.plugin import on_message
 from Utils.CustomRule import check_white_list, only_reply
 from Utils.Builder import ExceptionBuilder
@@ -23,13 +22,12 @@ Reply_SearchPic = on_message(priority=5, rule=only_reply() & check_white_list(),
 @Reply_SearchPic.handle()
 async def _Reply_SearchPic(bot: Bot, event: MessageEvent):
     send_except_msg = (
-        Message(
-            f"[CQ:at,qq={event.get_user_id()}]Senrin把消息抖空了硬是没发现图片的影子\n"
-            "若持续出现此报错，请按照以下步骤搜图：\n"
-            '1.将图片逐张转发至Senrin\n'
-            '2.回复需要搜索的图片并附上“搜图”'
+        MessageSegment.at(event.user_id)
+        +MessageSegment.text("Senrin把消息抖空了硬是没发现图片的影子\n"
+                            +"若持续出现此报错，请按照以下步骤搜图：\n"
+                            +'1.将图片逐张转发至Senrin\n'
+                            +'2.回复需要搜索的图片并附上“搜图”')
         )
-    )
     if '搜图' in str(event.get_message()):
         search_list = []
         result_list = []
@@ -57,11 +55,7 @@ async def _Reply_SearchPic(bot: Bot, event: MessageEvent):
                         f"{result_send[1]}\n"
                     )
                     send_msg_result += _add_result
-                if isinstance(event, GroupMessageEvent):
-                    await Reply_SearchPic.send(MessageSegment.text('[SearchPic正常:Succeed]\n').at(event.get_user_id()).text('Senrin从SauceNAO获得了搜图结果，并将以私聊方式发送！\nPS:若持续未收到图片，请添加Senrin为好友！'))
-                    await bot.send_private_msg(user_id=event.user_id, message=Message(send_msg_result))
-                elif isinstance(event, PrivateMessageEvent):
-                    await Reply_SearchPic.send(Message('[SearchPic正常:Succeed]\n好耶！找到图咯！\n'+send_msg_result))
+                await Reply_SearchPic.send(Message('[SearchPic正常:Succeed]\n好耶！找到图咯！\n'+send_msg_result))
             else:  # 不存在搜索结果
                 await Reply_SearchPic.send(MessageSegment.text(f'[SearchPic正常:Succeed]\n').at(event.get_user_id()).text('暂无相关信息，Senrin搜了个寂寞'))
         else:  # 无图

@@ -9,8 +9,8 @@ import json
 import time
 from nonebot import get_driver
 from nonebot.rule import Rule
-from nonebot.adapters.cqhttp import Bot, Event
-from nonebot.adapters.cqhttp.event import (GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import (GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,
                                            GroupDecreaseNoticeEvent,
                                            GroupIncreaseNoticeEvent,
                                            LuckyKingNotifyEvent)
@@ -111,7 +111,7 @@ def only_reply() -> Rule:
 
       * 无
     """
-    async def _only_reply(bot: Bot, event:Event, state: T_State) -> bool:
+    async def _only_reply(bot: Bot, event:MessageEvent, state: T_State) -> bool:
         if isinstance(event, MessageEvent):
             try:
                 getattr(event.reply,'message')

@@ -21,9 +21,9 @@ from Utils.CustomRule import Check_PA_Groups, only_reply
 from datetime import datetime
 from httpx import AsyncClient
 from nonebot import get_driver
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent, PrivateMessageEvent
-from nonebot.adapters.cqhttp.message import Message
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import Event, GroupMessageEvent, PrivateMessageEvent
+from nonebot.adapters.onebot.v11.message import MessageSegment, Message
 from nonebot.plugin import on_message, require
 global conclution, picture_lib, check_api
 conclution, check_api = '', True
@@ -92,8 +92,10 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
             picture_lib[img_msg.data['file']] = '合规'
         elif conclution == '不合规':
             picture_lib[img_msg.data['file']] = '不合规'
-            msg = Message(
-                f"[WARNING:不合规]\n[CQ:at,qq={event.user_id}]超速了超速了超速了超......"
+            msg = (
+                MessageSegment.text("[WARNING:不合规]\n")
+                +MessageSegment.at(event.user_id)
+                +MessageSegment.text("超速了超速了超速了超......")
             )
             msg_master = (
                 '上报违规消息！！！\n'
@@ -107,8 +109,10 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
             await get_pic.send(msg)
         elif conclution == '疑似':
             picture_lib[img_msg.data['file']] = '疑似'
-            msg = Message(
-                f"[WARNING:疑似]\n[CQ:at,qq={event.user_id}]注意车速（"
+            msg = (
+                MessageSegment.text("[WARNING:意疑似]\n")
+                +MessageSegment.at(event.user_id)
+                +MessageSegment.text("注意车速（")
             )
             msg_master = (
                 '上报可疑消息......\n'
@@ -147,9 +151,9 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
 @repire_lib.handle()
 async def _repire_lib(bot: Bot, event: Event):
     sendmsg = (
-        Message(
-            ''
-            f"[CQ:at,qq={event.get_user_id()}]Senrin把消息抖空了硬是没发现图片的影子\n"
+        MessageSegment.at(event.get_user_id())
+        +MessageSegment.text(
+            "Senrin把消息抖空了硬是没发现图片的影子\n"
             "若持续出现此报错，请按照以下步骤修正：\n"
             '1.将图片逐张转发至Senrin\n'
             '2.回复需要修正图片并附上“修正”'

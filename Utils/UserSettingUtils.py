@@ -1,7 +1,7 @@
 import os
 import json
 import time
-from nonebot.adapters.cqhttp.message import MessageSegment
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
 JsonPath = os.path.join(os.getcwd(),'Resources','Json')
 try:
@@ -12,7 +12,7 @@ except:
 else:
     pass
 
-async def Ban(UserID:str) -> MessageSegment:
+async def Ban(UserID:str) -> Message:
     """
         用户封禁函数
         规则：第一次60s，第二次+20s
@@ -29,4 +29,4 @@ async def Ban(UserID:str) -> MessageSegment:
     ban_dic[UserID]["Level"] = level
     with open(file=os.path.join(JsonPath,'ban.json'), mode='w', encoding='utf-8-sig') as f:
         json.dump(ban_dic, f, indent=2,sort_keys=True, ensure_ascii=False)
-    return MessageSegment.at(int(UserID)).text(f"[防滥用警告：Ban]\n防滥用机制触发，{banTime}s后即可恢复")
+    return MessageSegment.at(int(UserID))+MessageSegment.text(f"[防滥用警告：Ban]\n防滥用机制触发，{banTime}s后即可恢复")

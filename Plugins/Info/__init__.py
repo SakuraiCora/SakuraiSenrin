@@ -4,8 +4,8 @@
 """
 
 import datetime
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.plugin import on_command
 from Utils.TypeChecker import ScanNumber
 from Utils.ImageUtils import get_info_card

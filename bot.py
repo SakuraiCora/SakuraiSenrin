@@ -5,7 +5,7 @@ import nonebot
 import datetime
 import json
 import os
-from nonebot.adapters.cqhttp import Bot
+from nonebot.adapters.onebot.v11 import Adapter
 
 LogPath = os.path.join(os.getcwd(), 'Resources', 'Json', 'datalog.json')
 
@@ -27,9 +27,8 @@ nonebot.init(apscheduler_config={
 })
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
-driver.register_adapter("cqhttp", Bot)
+driver.register_adapter(Adapter)
 nonebot.load_plugins("Plugins")
-# nonebot.load_plugin("Plugins.PictureAppraisal")
 
 if __name__ == "__main__":
     nonebot.run()

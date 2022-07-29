@@ -21,6 +21,13 @@
 
 ---
 # 更新
+- 2022.7.28
+  - 修复Linux下数据库路径问题
+  - adapter更换为onebotV11
+  - 图片改为byteIO方式发送，减少空间占用
+  - **链接鉴定** 功能移除
+  - ~~为每个插件配置设置和热开关  #TODO~~
+  - **搜图**移除私聊发送
 - 2022.6.29
   - Gal功能回归，采用Sqlite3
   - 修复proxy问题
@@ -69,7 +76,7 @@
 >### [Datalog.py](.\src\plugins\Datalog.py)
 >+ 群聊发言次数记录及查询
 >### [GalRecommend.py*](.\src\plugins\GalRecommend.py)
->+ 基于 **恋爱游戏网** 的GalGame随机推荐*
+>+ 基于 **恋爱游戏网** 的GalGame随机推荐
 >### [Help.py](.\src\plugins\Help.py)
 >+ 提供帮助文档
 >### [Info.py](.\src\plugins\Info.py)
@@ -84,8 +91,6 @@
 >+ 通过调用 **Lolicon API** 来获取涩图
 >### [Study.py](.\src\plugins\Study.py)
 >+ 词库学习、调用、操作、展示
->### [TextAppraisa.py](.\src\plugins\TextAppraisa.py)
->+ 初步 **处理** 并 **鉴定** 所发的文字中是否包含 **链接**
 </details>
 
 
@@ -229,9 +234,6 @@
 
 - 【Reply】回复想搜的图
 	- 通过 **SauceNAO** 提供的API进行搜图 
-	- 搜图结果以**私聊**方式送达
-	- 若持续未收到结果，请添加Senrin为好友
-	> 好友验证码：Senrin（注意区分大小写）
 
 </details>
 
