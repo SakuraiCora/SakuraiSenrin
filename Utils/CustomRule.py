@@ -10,7 +10,7 @@ import time
 from nonebot import get_driver
 from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot
-from nonebot.adapters.onebot.v11.event import (GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,
+from nonebot.adapters.onebot.v11.event import (Event, GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,
                                            GroupDecreaseNoticeEvent,
                                            GroupIncreaseNoticeEvent,
                                            LuckyKingNotifyEvent)
@@ -39,7 +39,7 @@ def check_white_list() -> Rule:
 
         无
     """
-    async def _check(bot: Bot, event: MessageEvent, state: T_State) -> bool:
+    async def _check(bot: Bot, event: Event, state: T_State) -> bool:
         if isinstance(event, MessageEvent):
             if event.user_id in ban_dic:
                 if time.time() < ban_dic['QQnum']['Time']:

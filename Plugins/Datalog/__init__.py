@@ -18,6 +18,7 @@ from config import GIDS
 
 
 StartTime = datetime.datetime.now()
+LogPath = os.path.join(os.getcwd(), 'Resources', 'Json', 'datalog.json')
 scheduler = getattr(require('nonebot_plugin_apscheduler'),'scheduler')  # 定义计划任务
 water = on_command("water", priority=5, rule=check_white_list())  # 定义water查询命令
 resetLog = on_command("resetLog", priority=5, permission=SUPERUSER)  # 定义手动重置模块
@@ -30,12 +31,15 @@ def getMendic() ->dict:
             return json.load(fr)
     except:
         return {}
+global memdic
+memdic = getMendic()
 
 @scheduler.scheduled_job('cron', hour="0")  # 计划任务自动重置
 async def _scheduled_job():
+    global memdic
     bot = get_bot()
     for group_id in GIDS.values():
-        _msg = await get_water_list(memdic=getMendic(), groupID=group_id, bot=bot)
+        _msg = await get_water_list(memdic=memdic, groupID=group_id, bot=bot)
         await bot.send_group_msg(group_id=group_id, message=_msg)
         await bot.send_group_msg(group_id=group_id, message="吹水记录已重置")
     await bot.send_private_msg(user_id=int(getattr(bot.config, "OWNER")), message='初始化完毕')
@@ -65,11 +69,13 @@ async def _water_get(bot: Bot, event: MessageEvent):
 
 @addLog.handle()  # 成员变动增加条例
 async def _add_new_menber(bot: Bot, event: GroupIncreaseNoticeEvent):
-    await add_new_menber(getMendic(), event)
+    global memdic
+    await add_new_menber(memdic, event)
     await addLog.finish()
 
 
 @writeLog.handle()  # 吹氵记录增加
 async def _add_number_of_water(bot: Bot, event: GroupMessageEvent):
-    await add_number_of_water(getMendic(), bot, event)
+    global memdic
+    await add_number_of_water(memdic, bot, event)
     await writeLog.finish()
