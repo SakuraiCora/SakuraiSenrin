@@ -40,10 +40,9 @@ async def _water_cmd(event:GroupMessageEvent, args:Message = CommandArg()):
             if qq:
                 await water.finish(WaterInfoSub(event).getPersonalWater(qq))
             else:
-                await water.finish(WaterInfoSub(event).getPersonalWater(event.user_id))
+                await water_cmd.finish("[参数错误:args]传入参数过少或错误，请发送#help WTER查看帮助文档")
     else:
-        await water_cmd.finish("[参数错误:args]传入参数过少或错误，请发送#help WTER查看帮助文档")
-
+        await water.finish(WaterInfoSub(event).getPersonalWater(event.user_id))
 @water.handle()
 async def _add_water(event:GroupMessageEvent):
     WaterInfoSub(event).add()
