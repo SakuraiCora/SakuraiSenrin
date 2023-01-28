@@ -2,7 +2,7 @@
     Setu包含的功能：
     1.随机涩图(子功能)
     2.搜素定向涩图(子功能)
-    3.调用LoliconAPI，限制调用时间（基础CD:100s，可以调控）
+    3.调用LoliconAPI，限制调用时间（基础CD:60s，可以调控）
     4.图片存入库中
     5.requests改为https项目
     6.多个匹配指令，例如“来点涩图“、”来点XX涩图“、”整点好东西“之类的
@@ -11,18 +11,18 @@
 import asyncio
 import random
 import re
-import datetime
 import traceback
 from .handle_setu import random_setu, search_setu
-from Utils.Builder import RandomSetuMsg, SearchSetuMsg, ExceptionBuilder
-from Utils.LimitUtils import timeLimit, mathBuilder
+from .misc import RandomSetuMsg, SearchSetuMsg, SetuCommandTypeChecker
+from .config import coolDown, coolDownLocal
+from Utils.Builder import ExceptionBuilder
+from Utils.LimitUtils import mathBuilder
 from Utils.CustomRule import check_white_list, only_master
-from Utils.TypeChecker import SetuCommandTypeChecker
 from nonebot import get_driver
 from nonebot.typing import T_State
-from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.adapters.onebot.v11.message import MessageSegment
+from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel
 from nonebot.plugin import on_command, on_regex
 
 SuperUsers:set[str] = get_driver().config.superusers
@@ -48,8 +48,8 @@ level_zh_dic = {
 }
 
 
-@command_setu.handle()  # 通过命令调控涩图
-async def _command_setu(bot: Bot, event: MessageEvent, state:T_State):
+@command_setu.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 通过命令调控涩图
+async def _command_setu(event: MessageEvent, state:T_State):
     global last_time
     """
     命令1：#setu random level num
@@ -59,26 +59,17 @@ async def _command_setu(bot: Bot, event: MessageEvent, state:T_State):
     try:
         checked_type = SetuCommandTypeChecker(arg)  #进行命令检查
     except:
-        await command_setu.finish(MessageSegment.at(event.user_id).text("[参数错误:args]\n传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
+        await command_setu.finish(MessageSegment.at(event.user_id).text("[参数错误:args]\n传入了不正确的参数......\n请发送#help SETU查看帮助文档"))
     if checked_type == False:
-        await command_setu.finish(MessageSegment.at(event.user_id).text("[参数错误:args]\n传入了不正确的参数......\n然后指令坏掉了，Senrin处理了个寂寞"))
+        await command_setu.finish(MessageSegment.at(event.user_id).text("[参数错误:args]\n传入了不正确的参数......\n请发送#help SETU查看帮助文档"))
     else:
-        try:
-            timeChecker = await timeLimit(last_time, 45)  #type:ignore    
-        except: #初次启动无记录时间
-            timeChecker = True
-        else:
-            pass
-        if timeChecker or str(event.user_id) in SuperUsers:
-            prob = await mathBuilder(int(arg[3]))
-            state['answer'] = prob[1] 
-            await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
-            state['arg'] = arg
-        else:
-            await command_setu.finish(MessageSegment.at(event.user_id)+MessageSegment.text("涩图CD还没到，Senrin处理了个寂寞"))
+        prob = await mathBuilder(int(arg[3]))
+        state['answer'] = prob[1] 
+        await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
+        state['arg'] = arg
 
 @command_setu.got("ans", prompt="")
-async def _handle_command_setu(bot: Bot, event: MessageEvent, state:T_State):
+async def _handle_command_setu(event: MessageEvent, state:T_State):
     global last_time
     if str(state['ans']) == state['answer']:
         arg = state['arg']
@@ -105,8 +96,6 @@ async def _handle_command_setu(bot: Bot, event: MessageEvent, state:T_State):
                 pass
         else:
             setu = (False,[])
-        if setu[1] and str(event.user_id) not in SuperUsers: #重置涩图CD(除了超级用户)
-            last_time = datetime.datetime.now()
         await command_setu.send('Active！！！')
         for msg in setu[1]:
             await command_setu.send(msg)
@@ -116,26 +105,17 @@ async def _handle_command_setu(bot: Bot, event: MessageEvent, state:T_State):
         await command_setu.finish("计算题都算不对，才不给你这种baka看涩图！")
 
 
-@regex_setu_random.handle()  # 正则匹配到随机涩图
-async def _regex_setu_random(bot: Bot, event: MessageEvent, state:T_State):
-    try:
-        timeChecker = await timeLimit(last_time, 30)  #type:ignore    
-    except: #初次启动无记录时间
-        timeChecker = True
-    else:
-        pass
-    if timeChecker or str(event.user_id) in SuperUsers:
-        num = random.randint(1, 5)
-        prob = await mathBuilder(num)
-        state['answer'] = prob[1] 
-        state['num'] = num
-        await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
-    else:
-        await command_setu.finish(MessageSegment.at(event.user_id)+MessageSegment.text("涩图CD还没到，Senrin处理了个寂寞"))
+@regex_setu_random.handle(parameterless=[Cooldown(cooldown=coolDownLocal, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 正则匹配到随机涩图
+async def _regex_setu_random(event: MessageEvent, state:T_State):
+    num = random.randint(1, 5)
+    prob = await mathBuilder(num)
+    state['answer'] = prob[1] 
+    state['num'] = num
+    await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
 
 
 @regex_setu_random.got("ans", prompt="")
-async def _handle_regex_setu_random(bot: Bot, event: MessageEvent, state:T_State):
+async def _handle_regex_setu_random(event: MessageEvent, state:T_State):
     global last_time
     if str(state['ans']) == state['answer']:
         Rmodle, level, num = "regex", "随机", state['num']
@@ -152,50 +132,38 @@ async def _handle_regex_setu_random(bot: Bot, event: MessageEvent, state:T_State
             for msg in setu[1]:
                 await asyncio.sleep(0.1)
                 await regex_setu_random.send(msg)
-        if setu[0] and str(event.user_id) not in SuperUsers: #重置涩图CD(除了超级用户)
-            last_time = datetime.datetime.now()
         await regex_setu_search.finish()
     else:
         await command_setu.finish("计算题都算不对，才不给你这种baka看涩图！")
     
-@regex_setu_search.handle()  # 正则匹配到定向涩图
-async def _regex_setu_search(bot: Bot, event: MessageEvent, state:T_State):
-    try:
-        timeChecker = await timeLimit(last_time, 30)  #type:ignore    
-    except: #初次启动无记录时间
-        timeChecker = True
-    else:
-        pass
-    if timeChecker or str(event.user_id) in SuperUsers:
-        if re.match(r'^[来整][几.\S*][张份个]\S*[色涩黄]图$', str(event.get_message())):    # 正则匹配1
-            key = re.findall(r'^[来整][几.\S*][张份个](\S*?)[色涩黄]图$',str(event.get_message()))[0]
-            num = re.findall(r'^[来整]([几.\S*]?)[张份个]\S*[色涩黄]图$',str(event.get_message()))[0]
-            try:
-                num = int(num)
-            except:
-                if num == '几':
-                    num = random.randint(1, 5)
-                elif num in word_to_int:
-                    num = word_to_int[num]
-                else:
-                    await regex_setu_search.finish("这......太多了Senrin会坏掉的哦......")
+@regex_setu_search.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 正则匹配到定向涩图
+async def _regex_setu_search(event: MessageEvent, state:T_State):
+    if re.match(r'^[来整][几.\S*][张份个]\S*[色涩黄]图$', str(event.get_message())):    # 正则匹配1
+        key = re.findall(r'^[来整][几.\S*][张份个](\S*?)[色涩黄]图$',str(event.get_message()))[0]
+        num = re.findall(r'^[来整]([几.\S*]?)[张份个]\S*[色涩黄]图$',str(event.get_message()))[0]
+        try:
+            num = int(num)
+        except:
+            if num == '几':
+                num = random.randint(1, 5)
+            elif num in word_to_int:
+                num = word_to_int[num]
             else:
-                if num > 5:
-                    await regex_setu_search.finish("这......太多了Senrin会坏掉的哦......")
+                await regex_setu_search.finish("这......太多了Senrin会坏掉的哦......")
         else:
-            key = re.findall(r'^[来整]点(\S*?)[色涩黄]图$',str(event.get_message()))[0]  # 正则匹配2
-            num = 1
-        prob = await mathBuilder(num)
-        state['answer'] = prob[1] 
-        state['key'] = key
-        state['num'] = num
-        await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
+            if num > 5:
+                await regex_setu_search.finish("这......太多了Senrin会坏掉的哦......")
     else:
-        await command_setu.finish(MessageSegment.at(event.user_id)+MessageSegment.text("涩图CD还没到，Senrin处理了个寂寞"))
+        key = re.findall(r'^[来整]点(\S*?)[色涩黄]图$',str(event.get_message()))[0]  # 正则匹配2
+        num = 1
+    prob = await mathBuilder(num)
+    state['answer'] = prob[1] 
+    state['key'] = key
+    state['num'] = num
+    await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
 
 @regex_setu_search.got("ans", prompt="")
-async def _handle_regex_setu_search(bot: Bot, event: MessageEvent, state:T_State):
-    global last_time
+async def _handle_regex_setu_search(event: MessageEvent, state:T_State):
     if str(state['ans']) == state['answer']:
         key = state['key']
         num = state['num']
@@ -212,8 +180,4 @@ async def _handle_regex_setu_search(bot: Bot, event: MessageEvent, state:T_State
             for msg in setu[1]:
                 await asyncio.sleep(0.1)
                 await regex_setu_random.send(msg)
-        if setu[0] and str(event.user_id) not in SuperUsers: #重置涩图CD(除了超级用户)
-            last_time = datetime.datetime.now()
         await regex_setu_search.finish()
-    else:
-        await regex_setu_search.finish(MessageSegment.at(event.user_id)+MessageSegment.text("涩图CD还没到，Senrin处理了个寂寞"))
