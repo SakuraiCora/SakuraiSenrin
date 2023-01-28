@@ -1,11 +1,9 @@
-import os
 import re
-import time
 from io import BytesIO
 from httpx import AsyncClient
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from config import SAUCENAO_API as api_key
-from config import PROXY
+from botConfig import SAUCENAO_API as api_key
+from botConfig import PROXY
 
 async def SauceNAO(numst:int, pic_url:str):  # 搜图结果，空则返回None，return示例：(1,NAO_result)
     if PROXY == "":
@@ -64,11 +62,11 @@ async def SauceNAO(numst:int, pic_url:str):  # 搜图结果，空则返回None�
                 +MessageSegment.text(f'Pixiv源址：{source}')
             )
         else:  # 其他来源
-            source = result['results'][0]['data']['ext_urls'][0]
+            source = result['results'][0]['header']['index_name']
             NAO_result = (
                 MessageSegment.image(BytesIO(get_sample))
                 +MessageSegment.text(f'相似系数：{similarity}\n')
-                +MessageSegment.text(f'图片作者：{creator}\n')
-                +MessageSegment.text(f'图片源址：{source}')
+                +MessageSegment.text(f'图片作者：{str(creator)}\n')
+                +MessageSegment.text(f'图片来源：{source}')
             )
         return (numst+1, NAO_result)

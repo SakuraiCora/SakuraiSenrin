@@ -7,23 +7,19 @@
 import os
 import json
 import time
+from typing import Dict
 from nonebot import get_driver
 from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot
-from nonebot.adapters.onebot.v11.event import (Event, GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,
-                                           GroupDecreaseNoticeEvent,
-                                           GroupIncreaseNoticeEvent,
-                                           LuckyKingNotifyEvent)
-from nonebot.typing import T_State
-from config import GIDS, PAGIDS
-
-JsonPath = os.path.join(os.getcwd(),'Resources','Json')
+from nonebot.adapters.onebot.v11.event import (Event, GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,GroupDecreaseNoticeEvent,GroupIncreaseNoticeEvent,LuckyKingNotifyEvent,)
+from Utils.CostumClass import OfflineFileEvent
+from botConfig import GIDS, PAGIDS
 SuperUsers:set[str] = get_driver().config.superusers
 
 
 try:
-    with open(file=os.path.join(JsonPath,'ban.json'), mode='r', encoding='utf-8-sig') as f:
-        ban_dic:dict[str,dict[str,int]] = json.load(f)
+    with open(file='./Resources/Json/ban.json', mode='r', encoding='utf-8-sig') as f:
+        ban_dic:Dict[str,dict[str,int]] = json.load(f)
 except:
     raise FileNotFoundError("没有找到ban.json，请检查项目是否完整")
 else:
@@ -39,20 +35,15 @@ def check_white_list() -> Rule:
 
         无
     """
-    async def _check(bot: Bot, event: Event, state: T_State) -> bool:
-        if isinstance(event, MessageEvent):
-            if event.user_id in ban_dic:
-                if time.time() < ban_dic['QQnum']['Time']:
-                    return False
-        if isinstance(event, GroupBanNoticeEvent) or isinstance(event,GroupMessageEvent) or isinstance(event,GroupDecreaseNoticeEvent) or isinstance(event,GroupIncreaseNoticeEvent) or isinstance(event,LuckyKingNotifyEvent):
-            if event.group_id in GIDS.values():
-                return True
-            else:
+    async def _check(event:Event) -> bool:
+        try:
+            return True if event.group_id in GIDS.values() else False   #type:ignore
+        except:
+            try:
+                return True if event.user_id in ban_dic and time.time() < ban_dic['QQnum']['Time'] else False #type:ignore
+            except:
                 return False
-        elif isinstance(event, PrivateMessageEvent):
-                return True
-        else:
-            return False
+
     return Rule(_check)    #type:ignore
     
 def Check_PA_Groups() -> Rule:
@@ -65,7 +56,7 @@ def Check_PA_Groups() -> Rule:
 
         无
     """
-    async def _PAcheck(bot: Bot, event: MessageEvent, state: T_State) -> bool:
+    async def _PAcheck(event: MessageEvent) -> bool:
         if isinstance(event, GroupMessageEvent):
             if event.group_id in PAGIDS.values():
                 return True
@@ -85,21 +76,19 @@ def only_master() -> Rule:
 
       * 无
     """
-    async def _only_master(bot: Bot, event: MessageEvent, state: T_State) -> bool:
-        if isinstance(event, GroupMessageEvent):
-            info = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
-            if info['role'] == 'menber':
-                return False
-            elif str(event.user_id) in SuperUsers:
+    async def _only_master(bot: Bot, event: Event) -> bool:
+        try:
+            id = event.user_id  #type:ignore
+            if str(id) in SuperUsers:
                 return True
-            else:
-                return True
-        elif isinstance(event, PrivateMessageEvent) & (str(event.user_id) in SuperUsers):
-            return True
-        else:
+        except:
             return False
+        else:
+            if isinstance(event, GroupMessageEvent):
+                return False if (await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id))['role'] == 'menber' else True
+            else:
+                return False
     return Rule(_only_master)   #type:ignore
-
 
 def only_reply() -> Rule:
     """
@@ -111,7 +100,7 @@ def only_reply() -> Rule:
 
       * 无
     """
-    async def _only_reply(bot: Bot, event:MessageEvent, state: T_State) -> bool:
+    async def _only_reply(event:MessageEvent) -> bool:
         if isinstance(event, MessageEvent):
             try:
                 getattr(event.reply,'message')
@@ -122,3 +111,17 @@ def only_reply() -> Rule:
         else:
             return False
     return Rule(_only_reply)    #type:ignore
+
+def is_menu() -> Rule:
+    """
+    :说明:
+
+        判定是否为菜单文件
+
+    :参数:
+
+      * 无
+    """
+    async def _is_menu(event:OfflineFileEvent) -> bool:
+        return True if event.file.name == 'menu.txt' else False
+    return Rule(is_menu)    #type:ignore

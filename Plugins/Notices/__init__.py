@@ -26,9 +26,8 @@ from nonebot.adapters.onebot.v11.event import (FriendRequestEvent, GroupBanNotic
 from nonebot.plugin import on_notice, on_request, require
 
 scheduler = getattr(require('nonebot_plugin_apscheduler'),'scheduler')
-WelcomePath = os.path.join(os.getcwd(), 'Resources', 'Json', 'wordbank.json')
 
-with open(WelcomePath, 'r', encoding="utf-8") as fr:
+with open("./Resources/Json/wordbank.json", 'r', encoding="utf-8") as fr:
     handle_new_member = json.load(fr)['public']['preinstall_words']['handle_new_member']
 member_inc = on_notice(priority=5, rule=check_white_list())
 member_dec = on_notice(priority=5, rule=check_white_list())

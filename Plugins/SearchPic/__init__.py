@@ -20,7 +20,7 @@ Reply_SearchPic = on_message(priority=5, rule=only_reply() & check_white_list(),
 
 
 @Reply_SearchPic.handle()
-async def _Reply_SearchPic(bot: Bot, event: MessageEvent):
+async def _Reply_SearchPic(event: MessageEvent):
     send_except_msg = (
         MessageSegment.at(event.user_id)
         +MessageSegment.text("Senrin把消息抖空了硬是没发现图片的影子\n"
@@ -57,7 +57,7 @@ async def _Reply_SearchPic(bot: Bot, event: MessageEvent):
                     send_msg_result += _add_result
                 await Reply_SearchPic.send(Message('[SearchPic正常:Succeed]\n好耶！找到图咯！\n'+send_msg_result))
             else:  # 不存在搜索结果
-                await Reply_SearchPic.send(MessageSegment.text(f'[SearchPic正常:Succeed]\n').at(event.get_user_id()).text('暂无相关信息，Senrin搜了个寂寞'))
+                await Reply_SearchPic.send(MessageSegment.text(f'[SearchPic正常:Succeed]\n')+MessageSegment.at(event.get_user_id())+MessageSegment.text('暂无相关信息，Senrin搜了个寂寞'))
         else:  # 无图
             await Reply_SearchPic.finish(send_except_msg)
     await Reply_SearchPic.finish()

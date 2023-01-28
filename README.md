@@ -21,12 +21,25 @@
 
 ---
 # 更新
+- 2023.1.29
+  - 新年快乐（吧）🎉
+  - NEW✨
+    - 新增 **今天食堂吃什么** 功能
+    - 新增 **内置戳一戳** 词库
+    - 新增 **随机美图** 功能
+  - FIX🔧
+    - 修复 **发言记录无法重置** 的问题
+    - 重构 **Water** 功能
+    - 重构 **涩图** 相关功能
+    - 修复 **搜图** 意外错误
+    - 修复 **异常处理** 方案
+    - 修复 **Rule** 相关逻辑错误
+    - ~~美化（？）项目结构和代码~~
 - 2022.7.28
   - 修复Linux下数据库路径问题
   - adapter更换为onebotV11
   - 图片改为byteIO方式发送，减少空间占用
   - **链接鉴定** 功能移除
-  - ~~为每个插件配置设置和热开关  #TODO~~
   - **搜图**移除私聊发送
 - 2022.6.29
   - Gal功能回归，采用Sqlite3
@@ -69,37 +82,15 @@
 
 # 使用手册 （带*的为新功能！！！）
 
-## 按文件分类
-
-<details><summary>文件详情</summary>
-
->### [Datalog.py](.\src\plugins\Datalog.py)
->+ 群聊发言次数记录及查询
->### [GalRecommend.py*](.\src\plugins\GalRecommend.py)
->+ 基于 **恋爱游戏网** 的GalGame随机推荐
->### [Help.py](.\src\plugins\Help.py)
->+ 提供帮助文档
->### [Info.py](.\src\plugins\Info.py)
->+ 制作简单的资料卡
->### [Notice.py](.\src\plugins\Notice.py)
->+ 通知上报、自动校时、整点报时
->### [PictureAppraisal.py](.\src\plugins\PictureAppraisal.py)
->+ 通过调用 **百度内容识别API** 来完成违规图识别
->### [SearchPic.py](.\src\plugins\SearchPic.py)
->+ 通过 **SauceNAO** 提供的API进行搜图
->### [Setu.py](.\src\plugins\Setu.pyy)
->+ 通过调用 **Lolicon API** 来获取涩图
->### [Study.py](.\src\plugins\Study.py)
->+ 词库学习、调用、操作、展示
-</details>
-
 
 ## 按功能分类
 <details><summary>被动触发型集合</summary>
 
 >1. 违规图识别
->2. 蓝链检测
+>2. ~~蓝链检测（已废弃）~~
 >3. 通知上报
+>4. 戳一戳随机回复
+>5. at随机回复
 
 </details>
 
@@ -158,7 +149,7 @@
 
   > 示例：#water list
 
-	- 获取当天在本群的 **发言次数排行榜** （由于是at对方，慎用）
+	- 获取当天在本群的 **发言次数排行榜** 
 
 </details>
 
@@ -253,88 +244,48 @@
   - 推荐一个标签为 tag 的GalGame
   - tag参数：
     3D ACT NTR RPG 傲娇 百合 变身 病娇 策略 超能力 传奇 穿越 纯爱 催泪 大小姐 岛 电波作 恶魔 复仇 公主 怪物 怪物娘 馆 鬼畜 国产 过激 和风 黑暗向 后宫 护士 幻想 机器人 架空世界 姐妹 解谜 姐系 禁忌恋 近未来 剧情 咖啡店 开店 科幻 科学幻想 老师 恋爱 猎奇 另类 灵异 轮回 萝莉 冒险 美少女养成游戏 妹系 魔法 魔法少女 魔幻 模拟经营 模拟养成 魔女 末世 魔物娘 内涵 女仆 女神 女性视角 女性向 女战士 女装 女子＊＊ 偶像 妻 奇幻 蔷薇向 青春 青梅竹马 青涩三角关系 社团 兽耳 双子 探险 天使 田园 甜作 童话 同居 网络世界 伪娘 未亡人 巫女 喜剧 吸血鬼 夏 校园 新娘 悬疑 悬疑推理 学园 养成 异世界 音乐 御姐战斗 蒸汽朋克 职场 治愈 致郁 重口
+  
+- #taglist
 
+	>示例：#taglist
+	
+	
+	- 列出tag参数
+	
+	
+	
 
 </details>
 
-<hr>
+<details><summary>*今天食堂吃什么</summary>
 
-## 树状结构
 
-### 扫描层数：4
+  >示例：#eat
 
-  SakuraiSenrin
+不知道今天吃什么？试试这个！仅需根据Senrin的指令即可~
 
-    ├── Achieve
-    │   └── Gal
-    │       ├── config.py
-    │       ├── HandleHTML.py
-    │       └── __init__.py
-    ├── bot.py
-    ├── config.py
-    ├── Data
-    ├── docker-compose.yml
-    ├── Dockerfile
-    ├── Docs
-    │   └── img
-    │       └── Senrin-logo.png
-    ├── LICENSE
-    ├── Plugins
-    │   ├── Datalog
-    │   │   ├── Datalog.py
-    │   │   └── __init__.py
-    │   ├── Help.py
-    │   ├── Info.py
-    │   ├── Notices.py
-    │   ├── PictureAppraisal.py
-    │   ├── SearchPic
-    │   │   ├── config.py
-    │   │   ├── handle.py
-    │   │   └── __init__.py
-    │   ├── Setu
-    │   │   ├── config.py
-    │   │   ├── handle_setu.py
-    │   │   └── __init__.py
-    │   ├── Study.py
-    │   └── TextAppraisal.py
-    ├── README.md
-    ├── requirements.txt
-    ├── Resources
-    │   ├── Fonts
-    │   │   ├── msyh.ttc
-    │   │   └── zsjt.ttf
-    │   ├── HeadIMG
-    │   │   ├── 1479559098_big.jpg
-    │   │   └── 1479559098_min.jpg
-    │   ├── HelpTXT
-    │   │   ├── ASTD.txt
-    │   │   ├── AWHD.txt
-    │   │   ├── HelpList.txt
-    │   │   ├── INFO.txt
-    │   │   ├── RGAL.txt
-    │   │   ├── SETU.txt
-    │   │   ├── SPIC.txt
-    │   │   └── WTER.txt
-    │   ├── Json
-    │   │   ├── ban.json
-    │   │   ├── datalog.json
-    │   │   ├── picture_lib.json
-    │   │   └── wordbank.json
-    │   ├── SearchIMG
-    │   │   └── ExampleIMG.png
-    │   ├── send.jpg
-    │   └── WaterSend.jpg
-    └── Utils
-        ├── Builder.py
-        ├── CustomRule.py
-        ├── ImageUtils.py
-        ├── TimeUtils.py
-        ├── TypeChecker.py
-        ├── UserSettingUtils.py
-        └── __init__.py
+- 添加菜单（名为menu.json，小于100kb的标准json文件）发送至Senrin即可
 
-<hr>
+- ```json
+  {
+  "学校1":{
+          "食堂1":[
+              "菜名1 子菜名1 价格 等待时间 食物类型 标识",
+              "菜名2 子菜名2 价格 等待时间 食物类型 标识",
+              "菜名3 子菜名3 价格 等待时间 食物类型 标识"
+          ],
+          "食堂2":[
+              "菜名4 子菜名4 价格 等待时间 食物类型 标识",
+              "菜名5 子菜名5 价格 等待时间 食物类型 标识",
+              "菜名6 子菜名6 价格 等待时间 食物类型 标识",
+          ]
+      }
+  }
+  ```
 
+  以此类推，示例文件在 `Plugin/RandomEat/menu.json`
+
+</details>
 
 # 鸣谢
 [yanyongyu](https://github.com/yanyongyu):  方便易用利于扩展的SDK -> [Nonebot/NoneBot2](https://github.com/nonebot/nonebot2)

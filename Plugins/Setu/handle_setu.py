@@ -4,7 +4,7 @@ import random
 import aiohttp
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from httpx import AsyncClient
-from config import LOLICON_API, SETU_PATH, PROXY
+from botConfig import LOLICON_API, SETU_PATH, PROXY
 
 async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # 定义获取函数，返回为tuple，bool为是否重置CD，list包含涩图数据
     download_urls = []

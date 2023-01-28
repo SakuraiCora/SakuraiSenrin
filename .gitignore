@@ -13,6 +13,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+Achieve/
 build/
 develop-eggs/
 dist/
@@ -109,7 +110,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -123,6 +123,7 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+-botConfig.py
 
 # mkdocs documentation
 /site

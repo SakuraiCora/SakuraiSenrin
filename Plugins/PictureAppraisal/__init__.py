@@ -16,7 +16,7 @@
 """
 import json
 import os
-from config import BAIDU_CLIENT_ID, BAIDU_CLIENT_SECRET
+from botConfig import BAIDU_CLIENT_ID, BAIDU_CLIENT_SECRET
 from Utils.CustomRule import Check_PA_Groups, only_reply
 from datetime import datetime
 from httpx import AsyncClient
@@ -28,10 +28,8 @@ from nonebot.plugin import on_message, require
 global conclution, picture_lib, check_api
 conclution, check_api = '', True
 SuperUsers:set[str] = get_driver().config.superusers
-PicPath = os.path.join(os.getcwd(), 'Resources', 'Json', 'picture_lib.json')
-
 try:
-    with open(PicPath, 'r', encoding="utf-8") as fr:
+    with open("./Resources/Json/picture_lib.json", 'r', encoding="utf-8") as fr:
         picture_lib = json.load(fr)
 except:
     picture_lib = {}
@@ -52,7 +50,7 @@ async def _get_token():
         result = get_data.json()
     access_token = result['access_token']
     picture_lib['token'] = access_token
-    with open(PicPath, 'w', encoding="utf-8") as f:
+    with open("./Resources/Json/picture_lib.json", 'w', encoding="utf-8") as f:
         json.dump(picture_lib, f, indent=2, sort_keys=True,
                   ensure_ascii=False)  # 获取新的token后储存
     return access_token
@@ -124,7 +122,7 @@ async def _get_pic(bot: Bot, event: GroupMessageEvent):
                 await bot.send_private_msg(user_id=int(Admin), message=msg_master)
                 await bot.send_private_msg(user_id=int(Admin), message=Message(f"Message:{str(event.get_message())}"))
             await get_pic.send(msg)
-        with open(PicPath, 'w', encoding="utf-8") as f:
+        with open("./Resources/Json/picture_lib.json", 'w', encoding="utf-8") as f:
             json.dump(picture_lib, f, indent=2,
                       sort_keys=True, ensure_ascii=False)
     for _msg in event.message:
@@ -197,6 +195,6 @@ async def _repire_lib(bot: Bot, event: Event):
             pass
     else:
         pass
-    with open(PicPath, 'w', encoding="utf-8") as f:
+    with open("./Resources/Json/picture_lib.json", 'w', encoding="utf-8") as f:
         json.dump(picture_lib, f, indent=2, sort_keys=True, ensure_ascii=False)
     await repire_lib.finish()

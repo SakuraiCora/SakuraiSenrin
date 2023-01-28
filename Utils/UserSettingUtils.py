@@ -1,12 +1,12 @@
 import os
 import json
 import time
+from typing import Dict
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
-JsonPath = os.path.join(os.getcwd(),'Resources','Json')
 try:
-    with open(file=os.path.join(JsonPath,'ban.json'), mode='r', encoding='utf-8-sig') as f:
-        ban_dic:dict[str,dict[str,int]] = json.load(f)
+    with open(file="./Resources/Json/ban.json", mode='r', encoding='utf-8-sig') as f:
+        ban_dic:Dict[str,dict[str,int]] = json.load(f)
 except:
     raise FileNotFoundError("没有找到ban.json，请检查项目是否完整")
 else:
@@ -27,6 +27,6 @@ async def Ban(UserID:str) -> Message:
     banTime = int(time.time())+40+20*level
     ban_dic[UserID]["Time"] = banTime  #time用于判断用户是否处于封禁阶段（免去sleep的烦恼）
     ban_dic[UserID]["Level"] = level
-    with open(file=os.path.join(JsonPath,'ban.json'), mode='w', encoding='utf-8-sig') as f:
+    with open(file="./Resources/Json/ban.json", mode='w', encoding='utf-8-sig') as f:
         json.dump(ban_dic, f, indent=2,sort_keys=True, ensure_ascii=False)
     return MessageSegment.at(int(UserID))+MessageSegment.text(f"[防滥用警告：Ban]\n防滥用机制触发，{banTime}s后即可恢复")
