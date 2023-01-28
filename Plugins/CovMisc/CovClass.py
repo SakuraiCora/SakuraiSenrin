@@ -39,7 +39,10 @@ class AtInfo(CovInfo):
 
     def addAt(self) -> None:
         try:
-            cov_db.execute(f"""UPDATE "main"."{self.hour}" SET "at_time" = {self.at_time+1} WHERE rowid = {self.qq}""")
+            if cov_db.execute(f"""SELECT * FROM "{self.hour}" WHERE qq={self.qq}""").fetchall():
+                cov_db.execute(f"""UPDATE "main"."{self.hour}" SET "at_time" = {self.at_time+1} WHERE rowid = {self.qq}""")
+            else:
+                cov_db.execute(f"""INSERT INTO "main"."{self.hour}" ("qq", "at_time") VALUES ({self.qq}, {self.at_time+1})""")
         except:
             self.createTable()
             self.addAt()
@@ -72,7 +75,10 @@ class PokeInfo(CovInfo):
 
     def addPoke(self) -> None:
         try:
-            cov_db.execute(f"""UPDATE "main"."{self.hour}" SET "poke_time" = {self.poke_time+1} WHERE rowid = {self.qq}""")
+            if cov_db.execute(f"""SELECT * FROM "{self.hour}" WHERE qq={self.qq}""").fetchall():
+                cov_db.execute(f"""UPDATE "main"."{self.hour}" SET "poke_time" = {self.poke_time+1} WHERE rowid = {self.qq}""")
+            else:
+                cov_db.execute(f"""INSERT INTO "main"."{self.hour}" ("qq", "poke_time") VALUES ({self.qq}, {self.poke_time+1})""")
         except:
             self.createTable()
             self.addPoke()
