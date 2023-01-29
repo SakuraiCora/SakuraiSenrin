@@ -24,7 +24,7 @@ class WaterInfo:
         table = self.format_time_aps if symbol else self.format_time
         member_info:List[tuple[int,str,int]] = []
         bot = get_bot()
-        for _ in water_db.execute(f"""SELECT qq,water FROM "{table}" WHERE group_id={group_id} ORDER BY water""").fetchall():
+        for _ in water_db.execute(f"""SELECT qq,water FROM "{table}" WHERE group_id={group_id} ORDER BY water desc LIMIT 15""").fetchall():
             try:
                 info = await bot.get_group_member_info(group_id=group_id,user_id=_[0])
             except: 
