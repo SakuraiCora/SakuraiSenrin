@@ -15,7 +15,7 @@
 import asyncio
 import json
 
-from nonebot.plugin import on_command, on_notice
+from nonebot.plugin import on_command, on_notice, on_keyword
 from nonebot.params import ArgPlainText
 from nonebot.typing import T_State
 from Utils.CustomRule import only_master, check_white_list, is_menu
@@ -25,7 +25,7 @@ from .HandleMeal import *
 from .MealClass import menuFile
 
 
-eat = on_command("eat", aliases={"今天食堂吃什么", "吃什么", "怎么吃", "吃"}, priority=5, rule=check_white_list())
+eat = on_keyword({"今天食堂吃什么", "吃什么", "怎么吃"}, priority=5, rule=check_white_list())
 manage = on_command("menu_manage", rule=only_master())
 menu_file = on_notice(rule=only_master()&is_menu())
 
