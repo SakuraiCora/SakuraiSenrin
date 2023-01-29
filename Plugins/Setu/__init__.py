@@ -14,15 +14,16 @@ import re
 import traceback
 from .handle_setu import random_setu, search_setu
 from .misc import RandomSetuMsg, SearchSetuMsg, SetuCommandTypeChecker
-from .config import coolDown, coolDownLocal
+from .config import coolDown, coolDownLocal, revokeTime
 from Utils.Builder import ExceptionBuilder
 from Utils.LimitUtils import mathBuilder
 from Utils.CustomRule import check_white_list, only_master
 from nonebot import get_driver
 from nonebot.typing import T_State
+from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel
+from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel, autorevoke_send
 from nonebot.plugin import on_command, on_regex
 
 SuperUsers:set[str] = get_driver().config.superusers
@@ -48,7 +49,7 @@ level_zh_dic = {
 }
 
 
-@command_setu.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 通过命令调控涩图
+@command_setu.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GLOBAL)])  # 通过命令调控涩图
 async def _command_setu(event: MessageEvent, state:T_State):
     global last_time
     """
@@ -69,7 +70,7 @@ async def _command_setu(event: MessageEvent, state:T_State):
         state['arg'] = arg
 
 @command_setu.got("ans", prompt="")
-async def _handle_command_setu(event: MessageEvent, state:T_State):
+async def _handle_command_setu(bot:Bot, event: MessageEvent, state:T_State):
     global last_time
     if str(state['ans']) == state['answer']:
         arg = state['arg']
@@ -98,16 +99,16 @@ async def _handle_command_setu(event: MessageEvent, state:T_State):
             setu = (False,[])
         await command_setu.send('Active！！！')
         for msg in setu[1]:
-            await command_setu.send(msg)
+            await autorevoke_send(bot,event, msg, revoke_interval=revokeTime)
             await asyncio.sleep(0.1)
         await command_setu.finish()
     else:
         await command_setu.finish("计算题都算不对，才不给你这种baka看涩图！")
 
 
-@regex_setu_random.handle(parameterless=[Cooldown(cooldown=coolDownLocal, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 正则匹配到随机涩图
+@regex_setu_random.handle(parameterless=[Cooldown(cooldown=coolDownLocal, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GLOBAL)])  # 正则匹配到随机涩图
 async def _regex_setu_random(event: MessageEvent, state:T_State):
-    num = random.randint(1, 5)
+    num = random.randint(1, 3)
     prob = await mathBuilder(num)
     state['answer'] = prob[1] 
     state['num'] = num
@@ -115,7 +116,7 @@ async def _regex_setu_random(event: MessageEvent, state:T_State):
 
 
 @regex_setu_random.got("ans", prompt="")
-async def _handle_regex_setu_random(event: MessageEvent, state:T_State):
+async def _handle_regex_setu_random(bot:Bot, event: MessageEvent, state:T_State):
     global last_time
     if str(state['ans']) == state['answer']:
         Rmodle, level, num = "regex", "随机", state['num']
@@ -131,12 +132,12 @@ async def _handle_regex_setu_random(event: MessageEvent, state:T_State):
             await regex_setu_search.send('Active！！！')
             for msg in setu[1]:
                 await asyncio.sleep(0.1)
-                await regex_setu_random.send(msg)
+                await autorevoke_send(bot, event, msg, revoke_interval=revokeTime)
         await regex_setu_search.finish()
     else:
         await command_setu.finish("计算题都算不对，才不给你这种baka看涩图！")
     
-@regex_setu_search.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])  # 正则匹配到定向涩图
+@regex_setu_search.handle(parameterless=[Cooldown(cooldown=coolDown, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GLOBAL)])  # 正则匹配到定向涩图
 async def _regex_setu_search(event: MessageEvent, state:T_State):
     if re.match(r'^[来整][几.\S*][张份个]\S*[色涩黄]图$', str(event.get_message())):    # 正则匹配1
         key = re.findall(r'^[来整][几.\S*][张份个](\S*?)[色涩黄]图$',str(event.get_message()))[0]
@@ -145,7 +146,7 @@ async def _regex_setu_search(event: MessageEvent, state:T_State):
             num = int(num)
         except:
             if num == '几':
-                num = random.randint(1, 5)
+                num = random.randint(1, 3)
             elif num in word_to_int:
                 num = word_to_int[num]
             else:
@@ -163,7 +164,7 @@ async def _regex_setu_search(event: MessageEvent, state:T_State):
     await command_setu.send(f"欸等等！知识是打开宝库的金钥匙！动动脑动动手完成这道数学题吧！\n{prob[0]}")
 
 @regex_setu_search.got("ans", prompt="")
-async def _handle_regex_setu_search(event: MessageEvent, state:T_State):
+async def _handle_regex_setu_search(bot:Bot, event: MessageEvent, state:T_State):
     if str(state['ans']) == state['answer']:
         key = state['key']
         num = state['num']
@@ -179,5 +180,5 @@ async def _handle_regex_setu_search(event: MessageEvent, state:T_State):
             await regex_setu_search.send('Active！！！')
             for msg in setu[1]:
                 await asyncio.sleep(0.1)
-                await regex_setu_random.send(msg)
+                await autorevoke_send(bot, event, msg, revoke_interval=revokeTime)
         await regex_setu_search.finish()

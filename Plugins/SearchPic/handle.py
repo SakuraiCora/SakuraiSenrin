@@ -21,10 +21,7 @@ async def SauceNAO(numst:int, pic_url:str):  # 搜图结果，空则返回None�
         if similarity < 50.0:
             return None
         pic_url = result['results'][0]['header']['thumbnail']
-        if PROXY == "":
-            PROXY_ = {}
-        else:
-            PROXY_ = PROXY
+        PROXY_ = PROXY if PROXY else {}
         async with AsyncClient(proxies=PROXY_) as Client:
             _get_sample = await Client.get(url=pic_url)
             get_sample = _get_sample.read()

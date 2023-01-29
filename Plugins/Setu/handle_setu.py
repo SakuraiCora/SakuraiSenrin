@@ -1,7 +1,6 @@
 import os
 import asyncio
 import random
-import aiohttp
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from httpx import AsyncClient
 from botConfig import LOLICON_API, SETU_PATH, PROXY
@@ -17,7 +16,7 @@ async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # 定�
         post_data = {}
     async with AsyncClient(proxies={}) as Client:
         host = "http://api.lolicon.app/setu/v2/"
-        response = await Client.get(url=host, params=post_data)
+        response = await Client.get(url=host, params=post_data, follow_redirects=True)
         result = response.json()
     if len(result['data']) == 0:
         setu = (False,[Message(f'悲！没有符合条件的涩图：{key}')])
@@ -25,13 +24,8 @@ async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # 定�
         quota = '∞'
         for one in result['data']:
             img_url, title, author, pixivID = one['urls']['original'], one['title'], one['author'], one['pid']
-            tags = one['tags']
-            all_tag = ''
-            for tag in tags:
-                all_tag += f"{tag} "
+            all_tag = ' '.join(one['tags'])
             PicName = img_url.split("/")[-1]
-            if '.jpg' in PicName:
-                PicName = PicName.replace('.jpg','.png')
             way = os.path.join(SETU_PATH, PicName)
             download_urls.append((way,img_url))
             msg = (
@@ -43,18 +37,17 @@ async def get_setu(modle, level, num, key) -> tuple[bool,list[Message]]:  # 定�
                 +MessageSegment.text(f"剩余调用次数：{quota}"))
             setu[1].append(msg)
 
-        async def job(_way, session, url):
-            get_pic = await session.get(url, proxy=PROXY)
-            get_pic = await get_pic.read()
+        async def job(_way, session:AsyncClient, url):
+            get_pic = (await session.get(url)).read()
             with open(_way, "wb") as ffs:
                 ffs.write(get_pic)
             return str(url)
 
         async def main(loop, URL, num):
-            async with aiohttp.ClientSession() as session:
+            PROXY_ = PROXY if PROXY else {}
+            async with AsyncClient(proxies=PROXY_) as client:
                 num = len(URL)
-                tasks = [loop.create_task(job((URL[RR][0]), session, (URL[RR])[1]))
-                        for RR in range(num)]
+                tasks = [loop.create_task(job((URL[RR][0]), client, (URL[RR])[1])) for RR in range(num)]
                 await asyncio.sleep(0.1)
                 await asyncio.gather(*tasks)
         loop = asyncio.get_event_loop()
