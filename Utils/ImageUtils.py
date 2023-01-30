@@ -69,8 +69,7 @@ async def get_info_card(qq:int, user_name:str, sex:str, title:str, level:str, ti
     set_Font = ImageFont.truetype(os.path.join(
         os.getcwd(),  "Resources", 'Fonts', 'msyh.ttc'), 15)  # 设置字体属性
     w, h = set_Font.getsize(cr)
-    write_words.text(((640-w)/2, 600), cr, fill="#FFFFFF",  # type:ignore
-                     font=set_Font)
+    write_words.text(((640-w)/2, 600), cr, fill="#FFFFFF", font=set_Font)
     imgaeBytes = BytesIO()
     back_ground.save(imgaeBytes,format="png")
     return imgaeBytes
@@ -80,6 +79,17 @@ async def get_water_card(member_info:List[tuple[int,str,int]]) -> BytesIO:
         制作吹氵排行榜
     """
     WaterList:List[Image.Image] = []
+    set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", 'Fonts', 'zsjt.ttf'), 50)  # 设置字体属性
+
+    if not member_info:
+        _ = '   好冷，暂无吹水记录:(   '
+        x, y = set_Font.getsize(_)
+        image = Image.new(mode='RGB', size=(x, y), color="#19c2ff")  # 新建画布
+        draw = ImageDraw.ImageDraw(image)  # 写字
+        draw.text((0, 0), _, font=set_Font,fill=(255,255,255), direction=None)  # 开始画！
+        imgaeBytes = BytesIO()
+        image.save(imgaeBytes,format="png")
+        return imgaeBytes
 
     for _item in member_info:
         qq = _item[0]
@@ -111,7 +121,6 @@ async def get_water_card(member_info:List[tuple[int,str,int]]) -> BytesIO:
         back_ground = back_ground.crop((0,0,640,100))
         """添加文字"""
         write_words = ImageDraw.ImageDraw(back_ground)
-        set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", 'Fonts', 'zsjt.ttf'), 50)  # 设置字体属性
         w1, h1 = set_Font.getsize(name)
         w2, h2 = set_Font.getsize(f'{waterTimes}次')
         write_words.text((100, (100-h1)/2), name, fill="#FFFFFF", font=set_Font)
