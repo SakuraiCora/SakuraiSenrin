@@ -19,7 +19,7 @@ from nonebot.plugin import on_command, on_notice, on_keyword
 from nonebot.params import ArgPlainText
 from nonebot.typing import T_State
 from Utils.CustomRule import only_master, check_white_list, is_menu
-from Utils.CostumClass import OfflineFileEvent
+from Utils.CustumClass import OfflineFileEvent
 from httpx import AsyncClient
 from .HandleMeal import *
 from .MealClass import menuFile

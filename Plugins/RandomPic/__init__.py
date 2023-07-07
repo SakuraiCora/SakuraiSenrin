@@ -15,7 +15,7 @@ from Utils.LimitUtils import mathBuilder
 regex_meitu_random = on_regex(pattern=r'^[来整]点[美活好康][的图儿]$|^[美]图来$|^[美]图$|^[来整]点电子核酸$|^电子核酸$', rule=check_white_list())
 
 @regex_meitu_random.handle(parameterless=[Cooldown(cooldown=5, prompt='太快了太快了会受不了的...', isolate_level=CooldownIsolateLevel.GROUP)])
-async def _command_setu(event: GroupMessageEvent, state:T_State):
+async def _regex_meitu_random(event: GroupMessageEvent, state:T_State):
     prob = await mathBuilder(1)
     state['answer'] = prob[1] 
     state['num'] = 1
@@ -23,7 +23,7 @@ async def _command_setu(event: GroupMessageEvent, state:T_State):
 
 
 @regex_meitu_random.got("ans", prompt="")
-async def _handle_regex_setu_random(state:T_State):
+async def _handle_(state:T_State):
     if str(state['ans']) == state['answer']:
         await regex_meitu_random.send("[RandomPic正常:Succeed]\nちょっと待ってください......")
         with open('./Resources/MeituTXT/rand.txt','r',encoding='utf-8') as f:

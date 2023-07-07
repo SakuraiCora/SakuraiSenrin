@@ -6,6 +6,7 @@ from typing import List, Dict
     BAIDU_CLIENT_ID & BAIDU_CLIENT_SECRET请从 https://cloud.baidu.com 获取
     LOLICON_API 请从 https://api.lolicon.app 获取
     SAUCENAO_API 请从 https://saucenao.com 获取
+    GITHUB_TOKEN 请从 https://github.com/settings/tokens?type=beta 获取
 """
 
 BAIDU_CLIENT_ID:str = ''
@@ -32,3 +33,5 @@ PAGIDS:Dict[str,int] = {}   #此处填写需要进行图片鉴定的群聊（考
     }
 
 '''
+
+GITHUB_TOKEN = ''   #此处填写github token

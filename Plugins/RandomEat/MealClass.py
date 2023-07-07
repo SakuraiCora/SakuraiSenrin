@@ -91,7 +91,7 @@ class mealInfo:
     @classmethod
     def getFoodType(cls, p:str)->str:
         food_type_dict = {
-            "0":"小吃",
+            "0":"小吃/早餐",
             "1":"主食"
         }
         return food_type_dict[p]

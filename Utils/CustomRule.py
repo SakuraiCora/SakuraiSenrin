@@ -11,8 +11,8 @@ from typing import Dict
 from nonebot import get_driver
 from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot
-from nonebot.adapters.onebot.v11.event import (Event, GroupMessageEvent, MessageEvent, PrivateMessageEvent, GroupBanNoticeEvent,GroupDecreaseNoticeEvent,GroupIncreaseNoticeEvent,LuckyKingNotifyEvent,)
-from Utils.CostumClass import OfflineFileEvent
+from nonebot.adapters.onebot.v11.event import (Event, GroupMessageEvent, MessageEvent)
+from Utils.CustumClass import OfflineFileEvent
 from botConfig import GIDS, PAGIDS
 SuperUsers:set[str] = get_driver().config.superusers
 
@@ -40,9 +40,12 @@ def check_white_list() -> Rule:
             return True if event.group_id in GIDS.values() else False   #type:ignore
         except:
             try:
-                return True if event.user_id in ban_dic and time.time() < ban_dic['QQnum']['Time'] else False #type:ignore
+                if event.user_id in ban_dic:    #type:ignore
+                    return True if time.time() < ban_dic['QQnum']['Time'] else False
+                else:
+                    return True
             except:
-                return False
+                return True
 
     return Rule(_check)    #type:ignore
     

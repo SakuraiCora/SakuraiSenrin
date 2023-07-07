@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter
 
@@ -11,7 +8,8 @@ app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter(Adapter)
 
-nonebot.load_plugins("Plugins")
+# nonebot.load_plugins("Plugins")
+nonebot.load_plugin("Plugins.Study")
 
 if __name__ == "__main__":
     nonebot.run()

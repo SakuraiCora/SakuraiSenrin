@@ -3,18 +3,14 @@
     似乎可以用到正则
 """
 
+import os
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
-from Utils.CustomRule import check_white_list
-import os
-import json
 
+from Utils.CustomRule import check_white_list
 
 with open('./Resources/HelpTXT/HelpList.txt', 'r', encoding='utf-8-sig') as hp:
     HelpList = hp.read()
-with open('./Resources/Json/wordbank.json', 'r', encoding="utf-8") as fr:
-    studylib = json.load(fr)
-at_msg_reply = studylib['public']['preinstall_words']['at_msg_reply']
 
 help = on_command("help", priority=5, rule=check_white_list())
 

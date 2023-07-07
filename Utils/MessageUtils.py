@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 from nonebot.adapters.onebot.v11.event import MessageEvent
 
 
@@ -37,3 +37,11 @@ def ScanNumber(event: MessageEvent)->Union[int, None]:
     else:
         args = None
     return args
+
+
+def split_list(input_list:List, size:int) -> List[List]:
+    return [input_list[i:i+size] for i in range(0, len(input_list), size)]
+
+
+def split_str(string, step=20) -> str:
+    return '\n  '.join(string[i:i+step] for i in range(0, len(string), step))

@@ -1,10 +1,16 @@
 import os
+import math
 import sqlite3
 
-from typing import List
 from io import BytesIO
+from typing import List, Dict
 from httpx import AsyncClient
+from pil_utils import Text2Image
+from pil_utils.types import ColorType
 from PIL import ImageFilter, Image, ImageDraw, ImageFont
+
+from .CustumClass import ReverseItem
+from .MessageUtils import split_list, split_str
 
 class CostumeGB(ImageFilter.Filter):
     name = "GaussianBlur"
@@ -48,26 +54,24 @@ async def get_info_card(qq:int, user_name:str, sex:str, title:str, level:str, ti
     """user_name"""
     write_words = ImageDraw.ImageDraw(back_ground)
     set_Font = ImageFont.truetype(os.path.join(
-        os.getcwd(),  "Resources", 'Fonts', 'msyh.ttc'), 60)  # 设置字体属性
+        os.getcwd(),  "Resources", 'Fonts', 'LXGWWenKaiMono-Regular.ttf'), 60)  # 设置字体属性
     w, h = set_Font.getsize(user_name)
-    write_words.text(((640-w)/2, 150), user_name,   # type:ignore
-                     fill="#FFFFFF", font=set_Font)
+    write_words.text(((640-w)/2, 150), user_name, fill="#FFFFFF", font=set_Font)
     """qq title level sex"""
     set_Font = ImageFont.truetype(os.path.join(
-        os.getcwd(),  "Resources", 'Fonts', 'msyh.ttc'), 30)  # 设置字体属性
-    write_words.text((40, 300), f'qq号：{str(qq)}',
-                     fill="#FFFFFF", font=set_Font)
+        os.getcwd(),  "Resources", 'Fonts', 'LXGWWenKaiMono-Regular.ttf'), 30)  # 设置字体属性
+    write_words.text((40, 300), f'qq号：{str(qq)}', fill="#FFFFFF", font=set_Font)
     write_words.text((40, 400), f'头衔：{title}', fill="#FFFFFF", font=set_Font)
     write_words.text((400, 300), f'性别：{sex}', fill="#FFFFFF", font=set_Font)
     write_words.text((400, 400), f'等级：{level}', fill="#FFFFFF", font=set_Font)
     """time"""
     set_Font = ImageFont.truetype(os.path.join(
-        os.getcwd(),  "Resources", 'Fonts', 'msyh.ttc'), 40)  # 设置字体属性
+        os.getcwd(),  "Resources", 'Fonts', 'LXGWWenKaiMono-Regular.ttf'), 40)  # 设置字体属性
     write_words.text((40, 500), f'入群时间：{time}', fill="#FFFFFF", font=set_Font)
     """copyright"""
     cr = 'Copyright ©2020-2023 SakuraiSenrin, All Rights Reserved.'
     set_Font = ImageFont.truetype(os.path.join(
-        os.getcwd(),  "Resources", 'Fonts', 'msyh.ttc'), 15)  # 设置字体属性
+        os.getcwd(),  "Resources", 'Fonts', 'LXGWWenKaiMono-Regular.ttf'), 15)  # 设置字体属性
     w, h = set_Font.getsize(cr)
     write_words.text(((640-w)/2, 600), cr, fill="#FFFFFF", font=set_Font)
     imgaeBytes = BytesIO()
@@ -78,34 +82,46 @@ async def get_water_card(member_info:List[tuple[int,str,int]]) -> BytesIO:
     """
         制作吹氵排行榜
     """
-    WaterList:List[Image.Image] = []
-    set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", 'Fonts', 'zsjt.ttf'), 50)  # 设置字体属性
-
+    color_list = [
+        "#007bff",
+        "#2b91ff",
+        "#55a7ff",
+        "#80bdff",
+        "#aad3ff",
+        "#000000"
+    ]
+    set_Font = ImageFont.truetype("./Resources/Fonts/LXGWWenKaiMono-Regular.ttf", 50)  # 设置字体属性
+    _ = "Water Rank 今日吹水排行榜"
+    x, y = set_Font.getsize(_)
+    water_title = Image.new(mode='RGB', size=(800, 130), color="#FFFFFF")
+    draw = ImageDraw.ImageDraw(water_title)
+    draw.text(((800-x)/2, (130-y)/2), _, font=set_Font,fill=(0,0,0), direction=None)
+    WaterList:List[Image.Image] = [water_title]
     if not member_info:
         _ = '   好冷，暂无吹水记录:(   '
         x, y = set_Font.getsize(_)
-        image = Image.new(mode='RGB', size=(x, y), color="#19c2ff")  # 新建画布
-        draw = ImageDraw.ImageDraw(image)  # 写字
-        draw.text((0, 0), _, font=set_Font,fill=(255,255,255), direction=None)  # 开始画！
+        image = Image.new(mode='RGB', size=(x, y), color="#19c2ff")
+        draw = ImageDraw.ImageDraw(image)
+        draw.text((0, 0), _, font=set_Font,fill=(255,255,255), direction=None)
         imgaeBytes = BytesIO()
         image.save(imgaeBytes,format="png")
         return imgaeBytes
 
-    for _item in member_info:
+    for i, _item in enumerate(member_info):
+        i = i if i<=4 else 5
+        font = "Regular" if i<=4 else "Bold"
+        set_Font = ImageFont.truetype(f"./Resources/Fonts/LXGWWenKaiMono-{font}.ttf", 50)  # 设置字体属性
         qq = _item[0]
         user_name = _item[1]
         waterTimes = _item[2]
-        name = user_name if len(user_name) <=12 else user_name[:12]+"..."
+        name = user_name if len(user_name) <=10 else user_name[:10]+"..."
 
         async with AsyncClient(proxies={}) as Client:
             host_min = f'http://q1.qlogo.cn/g?b=qq&nk={qq}&s=3'
-            host_big = f'http://q1.qlogo.cn/g?b=qq&nk={qq}&s=640'
             response_min = await Client.get(url=host_min)
-            response_big = await Client.get(url=host_big)
             response_min = BytesIO(response_min.read())
-            response_big = BytesIO(response_big.read())
         """虚化背景"""
-        back_ground = Image.open(response_big).filter(CostumeGB(radius=60))
+        back_ground = Image.new(mode="RGB",size=(800,130), color=(255,255,255))
         """切圆头像"""
         w = 100
         img_head_open = Image.open(response_min)
@@ -116,31 +132,30 @@ async def get_water_card(member_info:List[tuple[int,str,int]]) -> BytesIO:
         draw.ellipse((0, 0, w, w), fill=255)
         img_head.putalpha(alpha_layer)
         """组合图片"""
-        back_ground.paste(img_head, (0,0), alpha_layer)
-        """裁剪图片"""
-        back_ground = back_ground.crop((0,0,640,100))
+        back_ground.paste(img_head, (40,15), alpha_layer)
         """添加文字"""
         write_words = ImageDraw.ImageDraw(back_ground)
         w1, h1 = set_Font.getsize(name)
         w2, h2 = set_Font.getsize(f'{waterTimes}次')
-        write_words.text((100, (100-h1)/2), name, fill="#FFFFFF", font=set_Font)
-        write_words.text((640-w2, (100-h1)/2), f'{waterTimes}次', fill="#FFFFFF", font=set_Font)
+        write_words.text((150, (130-h1)/2), name, fill=color_list[i], font=set_Font)
+        write_words.text((750-w2, (130-h1)/2), f'{waterTimes}次', fill=color_list[i], font=set_Font)
         WaterList.append(back_ground)
 
-    Final_IMG = Image.new('RGB',(640,100*len(WaterList)))#最终拼接的图像的大小
+    Final_IMG = Image.new('RGB',(800,130*len(WaterList)))#最终拼接的图像的大小
     Y_left = 0
-    Y_right = 100
+    Y_right = 130
     for _item in WaterList:
-        Final_IMG.paste(_item,(0,Y_left,640,Y_right))
-        Y_left += 100
-        Y_right += 100
+        Final_IMG.paste(_item,(0,Y_left,800,Y_right))
+        Y_left += 130
+        Y_right += 130
+    Final_IMG.show()
     imgaeBytes = BytesIO()
     Final_IMG.save(imgaeBytes,format="png")
     return imgaeBytes
 
-async def get_head_img(qq:int) -> bytes:
+async def get_head_img(qq:int, size:int=640) -> bytes:
     async with AsyncClient(proxies={}) as Client:
-        host_big = f'http://q1.qlogo.cn/g?b=qq&nk={qq}&s=640'
+        host_big = f'http://q1.qlogo.cn/g?b=qq&nk={qq}&s={size}'
         response_big = await Client.get(url=host_big)
     return response_big.read()
 
@@ -179,7 +194,7 @@ async def makeGalImg(tag:str, index:int) -> BytesIO:
         background = Image.open(os.path.join(os.getcwd(),"Resources","background.png"))
         background.paste(img, (80,80))
 
-        set_Font = ImageFont.truetype(os.path.join(os.getcwd(),  "Resources", 'Fonts', 'STXINWEI.TTF'), 50)  # 设置字体 属性
+        set_Font = ImageFont.truetype(os.path.join(os.getcwd(),  "Resources", 'Fonts', 'LXGWWenKaiMono-Regular.ttf'), 50)  # 设置字体 属性
 
         a,b = background.size
         try:
@@ -204,15 +219,123 @@ async def makeLibImg(StudyPath:str) -> BytesIO:
     """
         制作词库集合图片
     """
-    set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", "Fonts", 'msyh.ttc'), 30)  # 设置字体属性
+    set_Font = ImageFont.truetype(os.path.join(os.getcwd(), "Resources", "Fonts", 'LXGWWenKaiMono-Regular.ttf'), 30)  # 设置字体属性
     with open(StudyPath, mode="r", encoding='utf-8-sig') as f:
-        lib = '现有词库如下：\n'+f.read()  # 读取词库str
+        lib = '现有词库如下：\n'+f.read()
     x, _y = set_Font.getsize(max(lib.split('\n'), key=len))
-    y, _x = set_Font.getsize((len(lib.split('\n'))*'00'))  # 斗长度！！！！！
-    image = Image.new(mode='RGB', size=(x, y), color=(255, 255, 255))  # 新建画布
-    draw = ImageDraw.ImageDraw(image)  # 写字
-    draw.text((0, 0), lib, font=set_Font,fill="#000000", direction=None)  # 开始画！
+    y, _x = set_Font.getsize((len(lib.split('\n'))*'00')) 
+    image = Image.new(mode='RGB', size=(x, y), color=(255, 255, 255))
+    draw = ImageDraw.ImageDraw(image)
+    draw.text((0, 0), lib, font=set_Font,fill="#000000", direction=None)
 
     imgaeBytes = BytesIO()
     image.save(imgaeBytes,format="png")
     return imgaeBytes
+
+class WordBankImg:
+
+    def __init__(self) -> None:
+        pass
+
+    def security_text(self, text:str) -> str:
+        from bbcode import Parser
+        _ = Parser().tokenize(text)
+        safe_text = ""
+        for x in _:
+            if x[0] != 4:
+                safe_text += len(x[3]) * "*"
+            else:
+                safe_text += x[3]
+        return safe_text
+
+
+    def highlightText(
+            self, 
+            raw_text:str, 
+            highlight_text:str, 
+            font_size:int,
+            highlight_color:ColorType = "#007bff"
+    ) -> str:
+        bbcode_text = ""
+        _list = raw_text.split(highlight_text)
+
+        for x in _list[:-1]:
+            bbcode_text += x+f"[color={highlight_color}]{highlight_text}[/color]"
+        else:
+            bbcode_text += _list[-1]
+        return f"[size={font_size}]{bbcode_text}[/size]"
+
+
+    def wordBankItemImg(
+            self,
+            search_key:str, 
+            find_key:str, 
+            shuf_item_list:List[ReverseItem]
+            ) -> Image.Image:
+        safe_search_key = split_str(self.security_text(search_key)).strip()
+        safe_find_key = split_str(self.security_text(find_key)).strip()
+        title = self.highlightText(
+            raw_text = safe_find_key, 
+            highlight_text = safe_search_key, 
+            font_size = 40
+            )
+        body = ""
+        for shuf_item in shuf_item_list:
+            for k in shuf_item.__dict__:
+                v:str = getattr(shuf_item, k)
+                if len(v) > 20:
+                    v = v[:20] + "..."
+                body += f"    {k}={v}\n"
+            body += "\n"
+        body = self.highlightText(
+            raw_text = body,
+            highlight_text= search_key,
+            font_size = 30
+        )
+        b = f"{title}:\n{body}"
+        return Text2Image.from_bbcode_text(b,fontname="./Resources/Fonts/LXGWWenKaiMono-Regular.ttf").to_image(bg_color="#FFFFFF")
+
+
+    def concat_images_horizontally(self,image_list: List[Image.Image]) -> Image.Image:
+        widths, heights = zip(*(i.size for i in image_list))
+        new_image = Image.new('RGB', (sum(widths), max(heights)),color=(255,255,255))
+        x_offset = 0
+        for img in image_list:
+            new_image.paste(img, (x_offset, 0))
+            x_offset += img.width
+        return new_image
+
+
+    def concat_images_vertically(self, image_list: List[Image.Image]) -> Image.Image:
+        widths, heights = zip(*(i.size for i in image_list))
+        new_image = Image.new('RGB', (max(widths), sum(heights)),color=(255,255,255))
+        y_offset = 0
+        for img in image_list:
+            new_image.paste(img, (0, y_offset))
+            y_offset += img.height
+        return new_image
+
+
+    def concat_images(self, list_of_list_images: List[List[Image.Image]]) -> Image.Image:
+        horizontal_images = [self.concat_images_horizontally(image_list) for image_list in list_of_list_images]
+        final_image = self.concat_images_vertically(horizontal_images)
+        return final_image
+
+
+    def wordBankResultImg(
+            self, 
+            search_key:str, 
+            result:List[List[Dict[str, List[ReverseItem]]]],
+            page:int=0
+        ) -> BytesIO:      # TODO
+        return_bytes = BytesIO()
+        word_item_list:List[Image.Image] = []
+        word_to_img_list:List[List[Image.Image]]
+        for i,items in enumerate(result[page]):
+            for k,v in items.items():
+                word_item_list.append(self.wordBankItemImg(search_key, f"{i+1}.{k}", v))
+        word_to_img_list = split_list(word_item_list, int(math.sqrt(len(word_item_list))))
+        page_detail_img = Text2Image.from_bbcode_text(f"当前页码：第 [color=#007bff]{page+1}[/color] 页， 共 [color=#007bff]{len(result)}[/color] 页",fontname="./Resources/Fonts/LXGWWenKaiMono-Regular.ttf",fontsize=50).to_image(bg_color=(255,255,255))
+        word_to_img_list.append([page_detail_img])
+        self.concat_images(word_to_img_list).save(return_bytes, format="png")
+        return return_bytes
