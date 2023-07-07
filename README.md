@@ -21,6 +21,17 @@
 
 ---
 # 更新
+- 2023.7.6
+  - 老鸽子了🕊🕊🕊写了两个多月了现在才更新
+  - NEW✨
+    - 新增 **词库搜索** 功能
+    - 新增 **群组隔离** 功能
+    - 新增 **多词条** 功能
+    - ~~把群群友们的词库端上来了（~~
+  - FIX🔧
+    - 重构 **study** 相关功能
+    - 修复 **show** 相关问题
+    - 修复 **菜单sql误判** 相关问题
 - 2023.1.29
   - 新年快乐（吧）🎉
   - NEW✨
@@ -122,7 +133,13 @@
 
   - 以图片的格式展示词库 
 
-- #lib_manage del class uesr_id key（仅bot管理员）
+- lib_manage search（仅bot管理员）
+
+  > 示例：#lib_manage show
+
+  - 以图片的格式展示词库 
+
+<!-- - #lib_manage del class uesr_id key（仅bot管理员）
 
   > 示例：#lib_manage del public all_users Senrin
 
@@ -130,7 +147,7 @@
 	- class参数：public（全局相应）private（个人响应）
 	- user_id参数：
   	- 若class为public， 则填入 **all_users**
-    - 若class为private，则填入 **用户QQ号**
+    - 若class为private，则填入 **用户QQ号** -->
 
 </details>
 
