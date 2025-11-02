@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SakuraiSenrin 词库检索 (≧▽≦)</title>
+    <style>
+        /* 基础配色 */
+        :root {
+            --bg-color: #1a1b26;
+            /* 深蓝背景 */
+            --card-bg-color: #24283b;
+            /* 深灰卡片背景 */
+            --accent-color: #7aa2f7;
+            /* 青色高亮 */
+            --text-color: #c0caf5;
+            /* 主文字颜色 */
+            --secondary-text-color: #a9b1d6;
+            /* 次文字颜色 */
+            --highlight-color: #bb9af7;
+            /* 紫色高亮 */
+            --danger-color: #f7768e;
+            /* 红色警告 */
+            --border-color: #414868;
+            /* 边框颜色 */
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            /* 阴影颜色 */
+        }
+
+        .image {
+            max-width: 100%;
+            /* 图片宽度最多占父容器的 100% */
+            max-height: 200px;
+            /* 限制图片的最大高度为 200px */
+            width: auto;
+            /* 按比例调整宽度 */
+            height: auto;
+            /* 按比例调整高度 */
+            object-fit: contain;
+            /* 图片按比例缩放，保持完整显示 */
+            border-radius: 8px;
+            /* 可选：添加圆角效果 */
+            margin-top: 10px;
+            /* 图片与其他内容的间距 */
+        }
+
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            font-size: 18px;
+            /* 主体字体增大到18px */
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 40px;
+            /* 标题字体增大到40px */
+        }
+
+        .page-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            /* 次要信息字体增大到20px */
+            color: var(--secondary-text-color);
+        }
+
+        .page-info span {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+
+        .card-columns {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: calc(50% - 10px);
+            margin-bottom: 20px;
+            background-color: var(--card-bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px var(--shadow-color);
+            box-sizing: border-box;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+        }
+
+        .card-header {
+            font-size: 24px;
+            /* 卡片标题字体增大到24px */
+            font-weight: bold;
+            color: var(--highlight-color);
+            margin-bottom: 10px;
+        }
+
+        .card-header span {
+            font-size: 26px;
+            /* 卡片标题内的警告字体增大到26px */
+            color: var(--danger-color);
+        }
+
+        .card-body {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .card-item {
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .card-item span {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 18px;
+            /* 卡片正文的标注字体增大到18px */
+        }
+
+        .text {
+            margin-top: 5px;
+            color: var(--text-color);
+            font-size: 18px;
+            /* 卡片正文字体增大到18px */
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            /* 页脚字体增大到16px */
+            color: var(--secondary-text-color);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>SakuraiSenrin 词库检索 ✧(≖ ◡ ≖✿)</h1>
+        <div class="page-info">
+            当前第 <span>{{ current_page }}</span> 页，共 <span>{{ total_pages }}</span> 页！
+        </div>
+        <div class="card-columns">
+            {% for row in wordbank_data %}
+            <div class="card">
+                <div class="card-header">
+                    编号：<span>#{{ row.rowid or "无" }}</span>
+                </div>
+                <div class="card-body">
+                    {% if row.trigger_text %}
+                    <div class="card-item">
+                        <span>触发文本：</span>
+                        <div>
+                            {% for item in row.trigger_text %}
+                            {% if item.type == "text" %}
+                            <div class="text">{{ item.text }}</div>
+                            {% elif item.type == "image" %}
+                            <img class="image" src="{{ item.url }}" alt="图片">
+                            {% elif item.type == "face" %}
+                            <div class="face">[表情 ID：{{ item.id }}]</div>
+                            {% elif item.type == "at" %}
+                            <div class="at">@{{ item.qq }}</div>
+                            {% else %}
+                            <div>未知类型</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if row.response_text %}
+                    <div class="card-item">
+                        <span>响应文本：</span>
+                        <div>
+                            {% for item in row.response_text %}
+                            {% if item.type == "text" %}
+                            <div class="text">{{ item.text }}</div>
+                            {% elif item.type == "image" %}
+                            <img class="image" src="{{ item.url }}" alt="图片">
+                            {% elif item.type == "face" %}
+                            <div class="face">[表情 ID：{{ item.id }}]</div>
+                            {% elif item.type == "at" %}
+                            <div class="at">@{{ item.qq }}</div>
+                            {% else %}
+                            <div>未知类型</div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if row.trigger_config %}
+                    <div class="card-item">
+                        <span>触发配置：</span>
+                        <div>
+                            {% for key, value in row.trigger_config.items() %}
+                            <div class="text">{{ key }}: {{ value }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if row.response_rule_conditions %}
+                    <div class="card-item">
+                        <span>响应规则：</span>
+                        <div>
+                            {% for key, value in row.response_rule_conditions.items() %}
+                            <div class="text">{{ key }}: {{ value }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if row.extra_info %}
+                    <div class="card-item">
+                        <span>附加信息：</span>
+                        <div>
+                            <div class="text">{{ row.extra_info }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-item">
+                        <span>创建者：</span> {{ row.created_by or "未知 (。﹏。)" }}
+                    </div>
+                    <div class="card-item">
+                        <span>创建时间：</span>
+                        {% if row.created_at %}
+                        {{ row.created_at.strftime("%Y-%m-%d %H:%M:%S") }}
+                        {% else %}
+                        无 (╥﹏╥)
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="footer">
+            © {{ current_year }} SakuraiSenrin - 版权所有 ✿(≧▽≦)
+        </div>
+    </div>
+</body>
+
+</html>
