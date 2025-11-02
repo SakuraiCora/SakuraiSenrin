@@ -19,4 +19,4 @@ resources/database/*.db
 .DS_Store
 .ruff_cache
 
-backup*.sql.tar.gz
+backup/
