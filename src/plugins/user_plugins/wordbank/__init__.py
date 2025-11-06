@@ -71,7 +71,7 @@ from src.plugins.user_plugins.wordbank.wordbank_process import (
     upload_image_to_github,
 )
 from src.utils.common_helper import CommonHelper
-from src.utils.enmus import (
+from utils.enums import (
     ApprovalStatusEnum,
     PluginPermissionEnum,
     TriggerTypeEnum,

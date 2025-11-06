@@ -31,7 +31,7 @@ from src.database.system.dao import (
 from src.database.system.database import (
     get_session as get_system_session,
 )
-from src.utils.enmus import (
+from utils.enums import (
     ExceptionStatusEnum,
     PluginPermissionEnum,
     TriggerTypeEnum,

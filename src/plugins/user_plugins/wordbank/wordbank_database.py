@@ -25,7 +25,7 @@ from sqlalchemy.orm import (
 )
 
 from src.config.general_config import general_config
-from src.utils.enmus import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
+from utils.enums import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
 
 Base = declarative_base()
 

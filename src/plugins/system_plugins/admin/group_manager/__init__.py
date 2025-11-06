@@ -27,7 +27,7 @@ from src.utils.common_helper import (
     CommonHelper,
     GroupStatusEnum,
 )
-from src.utils.enmus import (
+from utils.enums import (
     PluginPermissionEnum,
     TriggerTypeEnum,
 )

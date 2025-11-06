@@ -2,10 +2,7 @@ from datetime import datetime
 
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11.bot import Bot
-from nonebot.adapters.onebot.v11.event import (
-    GroupMessageEvent,
-    MessageEvent,
-)
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata, on_command, on_message
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,7 +15,7 @@ from src.plugins.user_plugins.water.water_process import (
     generate_water_rank_image_by_pillow,
     generate_water_rank_image_by_playwright,
 )
-from src.utils.enmus import PluginPermissionEnum, TriggerTypeEnum
+from utils.enums import PluginPermissionEnum, TriggerTypeEnum
 from src.utils.message_builder import NoticeBuilder
 
 name = "吹水记录"

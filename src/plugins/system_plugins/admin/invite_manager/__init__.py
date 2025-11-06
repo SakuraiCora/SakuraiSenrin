@@ -33,7 +33,7 @@ from src.database.system.database import (
     get_session as get_system_session,
 )
 from src.scripts.init_memory_cache import init_group_info
-from src.utils.enmus import (
+from utils.enums import (
     GroupStatusEnum,
     InvitationStatusEnum,
     PluginPermissionEnum,
