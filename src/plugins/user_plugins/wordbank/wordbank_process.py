@@ -21,9 +21,6 @@ from src.plugins.user_plugins.wordbank.config import wordbank_config
 from src.plugins.user_plugins.wordbank.wordbank_database import Response, WordbankFTS
 from src.utils.common_helper import CommonHelper
 
-client_no_proxy = AsyncClient(verify=False)
-client_with_proxy = AsyncClient(proxy=general_config.proxy, verify=False)
-
 
 def message_to_string(message: Message):
     final_message_list = []
@@ -72,12 +69,22 @@ async def string_to_message(message_string: str) -> Message:
             case "image":
                 img_io = io.BytesIO()
                 img_io.write(
-                    ((await client_with_proxy.get(item["url"], timeout=20)).read())
+                    (
+                        (
+                            await AsyncClient(
+                                proxy=general_config.proxy, verify=False
+                            ).get(item["url"], timeout=20)
+                        ).read()
+                    )
                 )
                 raw_image = Image.open(img_io)
                 raw_image.resize(raw_image.size)
                 message_segment = MessageSegment.image(
-                    (await client_with_proxy.get(item["url"])).read()
+                    (
+                        await AsyncClient(proxy=general_config.proxy, verify=False).get(
+                            item["url"]
+                        )
+                    ).read()
                 )
                 message.append(message_segment)
             case "text":
@@ -124,10 +131,12 @@ async def upload_image_to_github(image_name: str, image_url: str):
         "Accept": "application/vnd.github+json",
     }
 
-    response = await client_no_proxy.get(image_url.replace("https://", "http://", 1))
+    response = await AsyncClient(verify=False).get(
+        image_url.replace("https://", "http://", 1)
+    )
     image_content = response.read()
 
-    await client_with_proxy.put(
+    await AsyncClient(proxy=general_config.proxy, verify=False).put(
         url=f"https://api.github.com/repos/SakuraiCora/SakuraiSenrinPic/contents/img/{image_name}",
         json={
             "message": "file",
