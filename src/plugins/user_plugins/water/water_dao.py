@@ -103,8 +103,8 @@ class WaterInfoDAO:
         total_users = len(group_counts)
         beaten_users = total_users - user_rank if user_rank else 0
         total_messages = sum(count for _, count in group_counts)
-        user_percentage = (
-            (user_count / total_messages) * 100 if total_messages > 0 else 0
+        user_percentage = round(
+            (user_count / total_messages) * 100 if total_messages > 0 else 0, 2
         )
 
         return user_count, user_rank, beaten_users, user_percentage
@@ -132,7 +132,7 @@ class WaterInfoDAO:
         total_users = len(all_groups_counts)
         beaten_users = total_users - user_rank if user_rank else 0
         total_messages = sum(count for _, count in all_groups_counts)
-        user_percentage = (
-            (user_count / total_messages) * 100 if total_messages > 0 else 0
+        user_percentage = round(
+            ((user_count / total_messages) * 100 if total_messages > 0 else 0), 2
         )
         return user_count, user_rank, beaten_users, user_percentage
