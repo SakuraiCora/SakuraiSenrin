@@ -19,7 +19,7 @@ from nonebot.plugin import PluginMetadata, on_command
 
 from src.cache.memory_cache import memory_cache
 from src.config.general_config import general_config
-from utils.enums import PluginPermissionEnum, TriggerTypeEnum
+from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
 
 name = "帮助文档"
 description = """

@@ -20,7 +20,7 @@ from src.database.system.dao import (
 )
 from src.database.system.database import async_session as system_session
 from src.scripts.init_memory_cache import init_user_info
-from utils.enums import (
+from src.utils.enums import (
     OnebotV11EventEnum,
     PluginPermissionEnum,
     TriggerTypeEnum,

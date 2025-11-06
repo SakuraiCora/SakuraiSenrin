@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.cache.memory_cache import memory_cache
 from src.config.general_config import general_config
-from utils.enums import PluginPermissionEnum, TriggerTypeEnum
+from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
 from src.utils.message_builder import NoticeBuilder
 
 require("src.plugins.user_plugins.wordbank")
