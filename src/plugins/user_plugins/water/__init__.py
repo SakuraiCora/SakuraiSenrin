@@ -15,7 +15,7 @@ from src.plugins.user_plugins.water.water_process import (
     generate_water_rank_image_by_pillow,
     generate_water_rank_image_by_playwright,
 )
-from utils.enums import PluginPermissionEnum, TriggerTypeEnum
+from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
 from src.utils.message_builder import NoticeBuilder
 
 name = "吹水记录"

@@ -24,7 +24,7 @@ from src.database.system.dao import (
 from src.database.system.database import (
     get_session as get_system_session,
 )
-from utils.enums import (
+from src.utils.enums import (
     PluginPermissionEnum,
     TriggerTypeEnum,
     UserStatusEnum,

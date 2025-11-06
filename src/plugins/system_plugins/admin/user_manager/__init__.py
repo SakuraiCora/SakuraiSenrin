@@ -26,7 +26,7 @@ from src.scripts.init_memory_cache import init_user_info
 from src.utils.common_helper import (
     CommonHelper,
 )
-from utils.enums import (
+from src.utils.enums import (
     PluginPermissionEnum,
     TriggerTypeEnum,
     UserStatusEnum,

@@ -16,7 +16,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.config.general_config import general_config
-from utils.enums import (
+from src.utils.enums import (
     ExceptionStatusEnum,
     GroupStatusEnum,
     InvitationStatusEnum,

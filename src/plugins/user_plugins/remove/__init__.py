@@ -16,7 +16,7 @@ from src.database.system.dao import (
     InvitationInfoDAO,
 )
 from src.database.system.database import get_session
-from utils.enums import (
+from src.utils.enums import (
     GroupStatusEnum,
     PluginPermissionEnum,
     TriggerTypeEnum,

@@ -1,6 +1,6 @@
 from nonebot.plugin import PluginMetadata
 
-from utils.enums import PluginPermissionEnum, TriggerTypeEnum
+from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
 
 name = "插件名称"
 description = """
