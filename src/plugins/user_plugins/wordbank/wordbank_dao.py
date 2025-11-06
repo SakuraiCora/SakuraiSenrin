@@ -31,7 +31,7 @@ from src.plugins.user_plugins.wordbank.wordbank_exceptions import (
     PermissionDeniedException,
 )
 from src.plugins.user_plugins.wordbank.wordbank_process import or_merge_rules
-from src.utils.enmus import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
+from utils.enums import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
 from src.utils.message_builder import NoticeBuilder
 
 

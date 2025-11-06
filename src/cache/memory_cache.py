@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from src.utils.enmus import (
+from utils.enums import (
     GroupStatusEnum,
     PluginPermissionEnum,
     TriggerTypeEnum,

@@ -17,7 +17,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
 from src.config.general_config import general_config
-from src.utils.enmus import PluginPermissionEnum, TriggerTypeEnum
+from utils.enums import PluginPermissionEnum, TriggerTypeEnum
 from src.utils.message_builder import NoticeBuilder
 
 name = "WebUI 管理模块"
