@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config.general_config import general_config
 from src.plugins.user_plugins.water.config import water_config
-from src.plugins.user_plugins.water.water_dao import WaterInfoDAO
-from src.plugins.user_plugins.water.water_database import get_session, init_water_info
-from src.plugins.user_plugins.water.water_process import (
+from plugins.user_plugins.water.dao import WaterInfoDAO
+from plugins.user_plugins.water.database import get_session, init_water_info
+from plugins.user_plugins.water.process import (
     generate_water_rank_image_by_pillow,
     generate_water_rank_image_by_playwright,
 )

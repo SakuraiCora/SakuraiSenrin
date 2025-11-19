@@ -27,7 +27,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.cache.memory_cache import memory_cache
 from src.config.general_config import general_config
 from src.plugins.user_plugins.wordbank.config import wordbank_config
-from src.plugins.user_plugins.wordbank.wordbank_dao import (
+from plugins.user_plugins.wordbank.dao import (
     AdditionLogService,
     AdditionService,
     ApprovalDAO,
@@ -46,7 +46,7 @@ from src.plugins.user_plugins.wordbank.wordbank_dao import (
     WordbankVoteDAO,
     WordbankVoteLogDAO,
 )
-from src.plugins.user_plugins.wordbank.wordbank_database import (
+from plugins.user_plugins.wordbank.database import (
     Response,
     SearchArgs,
     Trigger,
@@ -54,11 +54,11 @@ from src.plugins.user_plugins.wordbank.wordbank_database import (
     generate_wordbank_cache,
     get_session,
 )
-from src.plugins.user_plugins.wordbank.wordbank_exceptions import (
+from plugins.user_plugins.wordbank.exceptions import (
     DuplicateTriggerResponseException,
     PermissionDeniedException,
 )
-from src.plugins.user_plugins.wordbank.wordbank_process import (
+from plugins.user_plugins.wordbank.process import (
     find_first_matching_response,
     generate_wordbank_fts_image_by_pillow,
     generate_wordbank_fts_image_by_playwright,
