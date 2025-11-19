@@ -39,10 +39,6 @@ from nonebot.adapters.onebot.v11.message import Message
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from plugins.user_plugins.wordbank.process import (
-    message_to_string,
-)
-
 from .database import (
     AdditionLog,
     Approval,
@@ -59,6 +55,9 @@ from .database import (
 )
 from .database import (
     engine as wordbank_engine,
+)
+from .process import (
+    message_to_string,
 )
 
 

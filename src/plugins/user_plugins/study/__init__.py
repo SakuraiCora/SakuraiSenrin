@@ -17,7 +17,9 @@ from src.utils.message_builder import NoticeBuilder
 
 require("src.plugins.user_plugins.wordbank")
 
-from plugins.user_plugins.wordbank.dao import (  # noqa:E402
+from src.plugins.user_plugins.wordbank import wordbank_add_cmd_insert_to_db  # noqa:E402
+from src.plugins.user_plugins.wordbank.config import wordbank_config  # noqa:E402
+from src.plugins.user_plugins.wordbank.dao import (  # noqa:E402
     AdditionLogService,
     AdditionService,
     ApprovalDAO,
@@ -28,13 +30,11 @@ from plugins.user_plugins.wordbank.dao import (  # noqa:E402
     TriggerDAO,
     TriggerLogService,
 )
-from plugins.user_plugins.wordbank.process import (  # noqa:E402
+from src.plugins.user_plugins.wordbank.database import get_session  # noqa:E402
+from src.plugins.user_plugins.wordbank.process import (  # noqa:E402
     message_to_string,
     upload_image_to_github,
 )
-from src.plugins.user_plugins.wordbank import wordbank_add_cmd_insert_to_db  # noqa:E402
-from src.plugins.user_plugins.wordbank.config import wordbank_config  # noqa:E402
-from src.plugins.user_plugins.wordbank.database import get_session  # noqa:E402
 
 name = "学习词库（传统版）"
 description = """

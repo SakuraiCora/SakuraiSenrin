@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from playwright.async_api import async_playwright
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from plugins.user_plugins.water.database import WaterInfo
+from .database import WaterInfo
 
 
 async def generate_water_rank_image_by_pillow(
