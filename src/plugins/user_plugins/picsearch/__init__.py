@@ -8,9 +8,10 @@ from nonebot.plugin import PluginMetadata, on_fullmatch
 from PicImageSearch import Network, SauceNAO
 
 from src.config.general_config import general_config
-from .config import picsearch_config
 from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
 from src.utils.message_builder import NoticeBuilder
+
+from .config import picsearch_config
 
 name = "图片搜索"
 description = """
