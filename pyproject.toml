@@ -22,3 +22,6 @@ dependencies = [
 
 [tool.uv]
 index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+
+[tool.ruff.lint]
+extend-select = ["I"]
