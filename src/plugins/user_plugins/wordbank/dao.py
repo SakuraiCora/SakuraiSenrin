@@ -6,7 +6,11 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from plugins.user_plugins.wordbank.database import (
+from src.cache.memory_cache import memory_cache
+from src.utils.enums import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
+from src.utils.message_builder import NoticeBuilder
+
+from .database import (
     AdditionLog,
     Approval,
     ApprovalLog,
@@ -24,15 +28,12 @@ from plugins.user_plugins.wordbank.database import (
     WordbankVote,
     WordbankVoteLog,
 )
-from plugins.user_plugins.wordbank.exceptions import (
+from .exceptions import (
     CannotModifyTriggerRuleConditionsException,
     # DuplicateTriggerResponseException,
     PermissionDeniedException,
 )
-from plugins.user_plugins.wordbank.process import or_merge_rules
-from src.cache.memory_cache import memory_cache
-from src.utils.enums import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
-from src.utils.message_builder import NoticeBuilder
+from .process import or_merge_rules
 
 
 class TriggerDAO:

@@ -24,7 +24,21 @@ from nonebot.typing import T_State
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from plugins.user_plugins.wordbank.dao import (
+from src.cache.memory_cache import memory_cache
+from src.config.general_config import general_config
+from src.utils.common_helper import CommonHelper
+from src.utils.enums import (
+    ApprovalStatusEnum,
+    PluginPermissionEnum,
+    TriggerTypeEnum,
+    VoteOptionEnum,
+    VoteStatusEnum,
+)
+from src.utils.message_builder import AlertTemplate, NoticeBuilder
+
+from .cache import generate_wordbank_cache
+from .config import wordbank_config
+from .dao import (
     AdditionLogService,
     AdditionService,
     ApprovalDAO,
@@ -43,19 +57,18 @@ from plugins.user_plugins.wordbank.dao import (
     WordbankVoteDAO,
     WordbankVoteLogDAO,
 )
-from plugins.user_plugins.wordbank.database import (
+from .database import (
     Response,
     SearchArgs,
     Trigger,
     WordbankFTS,
-    generate_wordbank_cache,
     get_session,
 )
-from plugins.user_plugins.wordbank.exceptions import (
+from .exceptions import (
     DuplicateTriggerResponseException,
     PermissionDeniedException,
 )
-from plugins.user_plugins.wordbank.process import (
+from .process import (
     find_first_matching_response,
     generate_wordbank_fts_image_by_pillow,
     generate_wordbank_fts_image_by_playwright,
@@ -67,21 +80,9 @@ from plugins.user_plugins.wordbank.process import (
     string_to_message,
     upload_image_to_github,
 )
-from src.cache.memory_cache import memory_cache
-from src.config.general_config import general_config
-from src.plugins.user_plugins.wordbank.config import wordbank_config
-from src.utils.common_helper import CommonHelper
-from src.utils.enums import (
-    ApprovalStatusEnum,
-    PluginPermissionEnum,
-    TriggerTypeEnum,
-    VoteOptionEnum,
-    VoteStatusEnum,
-)
-from src.utils.message_builder import AlertTemplate, NoticeBuilder
 
 # TODO 迁移操作
-# from src.plugins.user_plugins.wordbank.migrate import main as migrate_main
+# from src..migrate import main as migrate_main
 
 # asyncio.run(migrate_main())
 
