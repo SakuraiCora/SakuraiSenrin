@@ -7,6 +7,7 @@ Description: 初始化数据库脚本
 """
 
 from urllib.parse import quote
+
 import nonebot
 from nonebot import get_bot
 from nonebot.adapters.onebot.v11 import Bot

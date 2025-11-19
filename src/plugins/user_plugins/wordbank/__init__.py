@@ -24,9 +24,6 @@ from nonebot.typing import T_State
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.cache.memory_cache import memory_cache
-from src.config.general_config import general_config
-from src.plugins.user_plugins.wordbank.config import wordbank_config
 from plugins.user_plugins.wordbank.dao import (
     AdditionLogService,
     AdditionService,
@@ -70,6 +67,9 @@ from plugins.user_plugins.wordbank.process import (
     string_to_message,
     upload_image_to_github,
 )
+from src.cache.memory_cache import memory_cache
+from src.config.general_config import general_config
+from src.plugins.user_plugins.wordbank.config import wordbank_config
 from src.utils.common_helper import CommonHelper
 from src.utils.enums import (
     ApprovalStatusEnum,

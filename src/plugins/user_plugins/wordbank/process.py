@@ -16,9 +16,9 @@ from PIL import Image, ImageDraw, ImageFont
 from playwright.async_api import async_playwright
 from tenacity import retry, stop_after_attempt, wait_fixed
 
+from plugins.user_plugins.wordbank.database import Response, WordbankFTS
 from src.config.general_config import general_config
 from src.plugins.user_plugins.wordbank.config import wordbank_config
-from plugins.user_plugins.wordbank.database import Response, WordbankFTS
 from src.utils.common_helper import CommonHelper
 
 

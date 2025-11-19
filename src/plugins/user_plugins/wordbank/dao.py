@@ -6,7 +6,6 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.cache.memory_cache import memory_cache
 from plugins.user_plugins.wordbank.database import (
     AdditionLog,
     Approval,
@@ -31,6 +30,7 @@ from plugins.user_plugins.wordbank.exceptions import (
     PermissionDeniedException,
 )
 from plugins.user_plugins.wordbank.process import or_merge_rules
+from src.cache.memory_cache import memory_cache
 from src.utils.enums import ApprovalStatusEnum, VoteOptionEnum, VoteStatusEnum
 from src.utils.message_builder import NoticeBuilder
 

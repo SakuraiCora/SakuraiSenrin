@@ -7,9 +7,7 @@ Description: System DAO 抽象类
 """
 
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
-
-from typing import Sequence
+from typing import Generic, Sequence, TypeVar
 
 T = TypeVar("T")
 
