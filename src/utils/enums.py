@@ -121,3 +121,10 @@ class VoteStatusEnum(str, Enum):
             "Oppose": "反对 👎",
         }
         return translations.get(self.value, self.value)
+
+
+class WordbankExtraActionEnum(str, Enum):
+    AT_MENTIONED = "AT_MENTIONED"
+    POKE_MENTIONED = "POKE_MENTIONED"
+    GROUP_JOIN = "GROUP_JOIN"
+    GROUP_LEAVE = "GROUP_LEAVE"

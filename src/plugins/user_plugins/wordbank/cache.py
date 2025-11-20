@@ -1,15 +1,15 @@
+import asyncio
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, List, Optional
 
-from sqlalchemy import (
-    and_,
-    join,
-    select,
-)
+from diskcache import Cache
+from httpx import AsyncClient
+from sqlalchemy import and_, join, select
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import (
-    joinedload,
-)
+from sqlalchemy.orm import joinedload
+
+from src.config.general_config import general_config
 
 from .database import Base, Response, Trigger, WordbankFTS, async_session, engine
 
@@ -32,6 +32,36 @@ class TriggerCache:
 class WordbankCache:
     message_trigger_cache: dict[str, TriggerCache]
     extra_trigger_cache: dict[str, TriggerCache]
+
+
+class ImageCache:
+    def __init__(
+        self,
+        cache_dir: str = str(Path(__file__).parent / "imagecache"),
+        size_limit=10 * 1024 * 1024 * 1024,
+    ):
+        self.cache = Cache(cache_dir, size_limit=size_limit)
+        self.default_ttl = 7 * 24 * 60 * 60
+
+    async def fetch_image(self, filename: str):
+        async with AsyncClient(proxy=general_config.proxy, verify=False) as client:
+            resp = await client.get(filename)
+            return resp.read()
+
+    def check_image(self, filename: str):
+        return filename in self.cache
+
+    def get_image(self, filename: str):
+        if not (img := self.cache.get(filename)):
+            return asyncio.run(self.fetch_image(filename))
+        return img
+
+    def set_image(self, filename: str, image: bytes):
+        if not self.check_image(filename):
+            self.cache.set(filename, image, self.default_ttl)
+
+    def delete_image(self, filename: str):
+        self.cache.delete(filename)
 
 
 async def init_wordbank() -> None:
@@ -101,3 +131,6 @@ async def generate_wordbank_cache() -> WordbankCache:
             else:
                 extra_trigger_cache[trigger.extra_info] = trigger_cache
     return WordbankCache(message_trigger_cache, extra_trigger_cache)
+
+
+image_cache = ImageCache()
