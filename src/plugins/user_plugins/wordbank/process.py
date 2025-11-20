@@ -70,13 +70,14 @@ async def string_to_message(message_string: str) -> Message:
     for item in message_list:
         match item["type"]:
             case "image":
-                message_segment = MessageSegment.image(
-                    (
+                if not (img := image_cache.get_image(item["url"])):
+                    img = (
                         await AsyncClient(proxy=general_config.proxy, verify=False).get(
                             item["url"]
                         )
                     ).read()
-                )
+                    image_cache.set_image(item["url"], img)
+                message_segment = MessageSegment.image(img)
                 message.append(message_segment)
             case "text":
                 message.append(MessageSegment.text(item["text"]))

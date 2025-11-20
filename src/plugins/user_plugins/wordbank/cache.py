@@ -4,12 +4,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from diskcache import Cache
-from httpx import AsyncClient
 from sqlalchemy import and_, join, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import joinedload
-
-from src.config.general_config import general_config
 
 from .database import Base, Response, Trigger, WordbankFTS, async_session, engine
 
@@ -43,18 +40,11 @@ class ImageCache:
         self.cache = Cache(cache_dir, size_limit=size_limit)
         self.default_ttl = 7 * 24 * 60 * 60
 
-    async def fetch_image(self, filename: str):
-        async with AsyncClient(proxy=general_config.proxy, verify=False) as client:
-            resp = await client.get(filename)
-            return resp.read()
-
     def check_image(self, filename: str):
         return filename in self.cache
 
-    def get_image(self, filename: str):
-        if not (img := self.cache.get(filename)):
-            return asyncio.run(self.fetch_image(filename))
-        return img
+    def get_image(self, filename: str) -> Optional[bytes]:
+        return self.cache.get(filename)  # type: ignore
 
     def set_image(self, filename: str, image: bytes):
         if not self.check_image(filename):
