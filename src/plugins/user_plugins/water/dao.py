@@ -8,7 +8,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.plugins.user_plugins.water.water_database import WaterInfo
+from .database import WaterInfo
 
 
 class WaterInfoDAO:

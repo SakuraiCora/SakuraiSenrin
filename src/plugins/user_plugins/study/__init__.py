@@ -19,7 +19,7 @@ require("src.plugins.user_plugins.wordbank")
 
 from src.plugins.user_plugins.wordbank import wordbank_add_cmd_insert_to_db  # noqa:E402
 from src.plugins.user_plugins.wordbank.config import wordbank_config  # noqa:E402
-from src.plugins.user_plugins.wordbank.wordbank_dao import (  # noqa:E402
+from src.plugins.user_plugins.wordbank.dao import (  # noqa:E402
     AdditionLogService,
     AdditionService,
     ApprovalDAO,
@@ -30,8 +30,8 @@ from src.plugins.user_plugins.wordbank.wordbank_dao import (  # noqa:E402
     TriggerDAO,
     TriggerLogService,
 )
-from src.plugins.user_plugins.wordbank.wordbank_database import get_session  # noqa:E402
-from src.plugins.user_plugins.wordbank.wordbank_process import (  # noqa:E402
+from src.plugins.user_plugins.wordbank.database import get_session  # noqa:E402
+from src.plugins.user_plugins.wordbank.process import (  # noqa:E402
     message_to_string,
     upload_image_to_github,
 )

@@ -17,9 +17,12 @@ from playwright.async_api import async_playwright
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from src.config.general_config import general_config
-from src.plugins.user_plugins.wordbank.config import wordbank_config
-from src.plugins.user_plugins.wordbank.wordbank_database import Response, WordbankFTS
 from src.utils.common_helper import CommonHelper
+from src.utils.enums import WordbankExtraActionEnum
+
+from .cache import image_cache
+from .config import wordbank_config
+from .database import Response, WordbankFTS
 
 
 def message_to_string(message: Message):
@@ -67,25 +70,14 @@ async def string_to_message(message_string: str) -> Message:
     for item in message_list:
         match item["type"]:
             case "image":
-                img_io = io.BytesIO()
-                img_io.write(
-                    (
-                        (
-                            await AsyncClient(
-                                proxy=general_config.proxy, verify=False
-                            ).get(item["url"], timeout=20)
-                        ).read()
-                    )
-                )
-                raw_image = Image.open(img_io)
-                raw_image.resize(raw_image.size)
-                message_segment = MessageSegment.image(
-                    (
+                if not (img := image_cache.get_image(item["url"])):
+                    img = (
                         await AsyncClient(proxy=general_config.proxy, verify=False).get(
                             item["url"]
                         )
                     ).read()
-                )
+                    image_cache.set_image(item["url"], img)
+                message_segment = MessageSegment.image(img)
                 message.append(message_segment)
             case "text":
                 message.append(MessageSegment.text(item["text"]))
@@ -102,17 +94,17 @@ async def string_to_message(message_string: str) -> Message:
 async def process_extra_info(user_id: str, extra_info: dict) -> Message:
     return_message = Message()
     match extra_info.get("action"):
-        case "AT_MENTIONED":
+        case WordbankExtraActionEnum.AT_MENTIONED.value:
             return_message.append(MessageSegment.at(user_id))
-        case "POKE_MENTIONED":
+        case WordbankExtraActionEnum.POKE_MENTIONED.value:
             return_message.append(MessageSegment.at(user_id))
-        case "GROUP_JOIN":
+        case WordbankExtraActionEnum.GROUP_JOIN.value:
             return_message.append(MessageSegment.text(wordbank_config.append_message))
             return_message.append(MessageSegment.at(user_id))
             return_message.append(
                 MessageSegment.image(await CommonHelper.get_qq_avatar(user_id))
             )
-        case "GROUP_LEAVE":
+        case WordbankExtraActionEnum.GROUP_LEAVE.value:
             return_message.append(MessageSegment.text(user_id))
             return_message.append(
                 MessageSegment.image(await CommonHelper.get_qq_avatar(user_id))
@@ -124,7 +116,9 @@ async def process_extra_info(user_id: str, extra_info: dict) -> Message:
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(3), reraise=True)
-async def upload_image_to_github(image_name: str, image_url: str):
+async def upload_image_to_github(filename: str, image_url: str):
+    if image_cache.check_image(filename):
+        return
     headers = {
         "Authorization": f"Bearer {general_config.gist_token}",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -137,7 +131,7 @@ async def upload_image_to_github(image_name: str, image_url: str):
     image_content = response.read()
 
     await AsyncClient(proxy=general_config.proxy, verify=False).put(
-        url=f"https://api.github.com/repos/SakuraiCora/SakuraiSenrinPic/contents/img/{image_name}",
+        url=f"https://api.github.com/repos/SakuraiCora/SakuraiSenrinPic/contents/img/{filename}",
         json={
             "message": "file",
             "content": base64.b64encode(image_content).decode(),
@@ -145,6 +139,7 @@ async def upload_image_to_github(image_name: str, image_url: str):
         headers=headers,
         timeout=20,
     )
+    image_cache.set_image(filename, image_content)
 
 
 def select_random_response(responses: List[Response]) -> Optional[Response]:

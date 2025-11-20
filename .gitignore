@@ -20,3 +20,5 @@ resources/database/*.db
 .ruff_cache
 
 backup/
+
+src/plugins/user_plugins/wordbank/imagecache/

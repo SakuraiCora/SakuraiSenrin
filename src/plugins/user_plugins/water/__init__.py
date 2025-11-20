@@ -8,15 +8,16 @@ from nonebot.plugin import PluginMetadata, on_command, on_message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config.general_config import general_config
-from src.plugins.user_plugins.water.config import water_config
-from src.plugins.user_plugins.water.water_dao import WaterInfoDAO
-from src.plugins.user_plugins.water.water_database import get_session, init_water_info
-from src.plugins.user_plugins.water.water_process import (
+from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
+from src.utils.message_builder import NoticeBuilder
+
+from .config import water_config
+from .dao import WaterInfoDAO
+from .database import get_session, init_water_info
+from .process import (
     generate_water_rank_image_by_pillow,
     generate_water_rank_image_by_playwright,
 )
-from src.utils.enums import PluginPermissionEnum, TriggerTypeEnum
-from src.utils.message_builder import NoticeBuilder
 
 name = "吹水记录"
 description = """
